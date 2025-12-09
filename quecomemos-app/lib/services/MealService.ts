@@ -61,7 +61,12 @@ export class MealService {
         mealName: mealName
       });
 
-      const description = `Consumption of ${mealName} at ${new Date(mealData.date).toLocaleString()}`;
+      const portionFraction = mealData.portions?.portionFraction ?? 1.0;
+      const portionPercent = Math.round(portionFraction * 100);
+      const name = portionPercent === 100 
+        ? `Consumption of ${mealName}`
+        : `Consumption of ${mealName} (${portionPercent}%)`;
+      const description = 'From manual meal registration';
 
       const response = await fetch(`${API_BASE_URL}/meal-consumptions/individual`, {
         method: 'POST',
@@ -70,7 +75,7 @@ export class MealService {
           'Authorization': `Bearer ${session.access_token}`
         },
         body: JSON.stringify({
-          name: description,
+          name: name,
           description: description,
           profileId: profileId,
           mealId: mealData.mealId,
@@ -128,7 +133,11 @@ export class MealService {
         };
       }
 
-      const description = `Group consumption of ${mealName} at ${new Date(mealData.date).toLocaleString()}`;
+      const portionFraction = mealData.portions?.portionFraction ?? 1.0;
+      const portionPercent = Math.round(portionFraction * 100);
+      const name = portionPercent === 100 
+        ? `Consumption of ${mealName}`
+        : `Consumption of ${mealName} (${portionPercent}%)`;
 
       const response = await fetch(`${API_BASE_URL}/meal-consumptions/group`, {
         method: 'POST',
@@ -137,8 +146,7 @@ export class MealService {
           'Authorization': `Bearer ${session.access_token}`
         },
         body: JSON.stringify({
-          name: description,
-          description: description,
+          name: name,
           profileId: profileId,
           groupId: groupId,
           mealId: mealData.mealId,

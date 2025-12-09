@@ -80,15 +80,14 @@ export default function GroupManualMealPage() {
 
     setSubmitting(true);
     try {
-      // Register the meal for the group (creates consumption for all members)
+      // Register the meal for the group (creates consumption for the group)
       const response = await fetch(`${API_BASE_URL}/meal-consumptions/group`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: `Group manual meal: ${selectedMeal.name}`,
-          description: `Manual registration for ${group.name} - Members can customize portions`,
+          name: `Consumption of ${selectedMeal.name}`,
           mealId: selectedMeal.MealID,
           profileId: profile.id,
           groupId: parseInt(groupId),

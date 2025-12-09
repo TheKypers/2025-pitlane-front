@@ -4,7 +4,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Info, ChefHat } from 'lucide-react';
+import { ArrowLeft, Info, ChefHat, Utensils } from 'lucide-react';
 import Image from 'next/image';
 import { API_BASE_URL } from '@/lib/config/api';
 import type { Group } from '@/components/groups';
@@ -174,6 +174,13 @@ export default function GroupDetailPage() {
             className="w-full sm:w-auto border-green-600 text-green-600 hover:bg-green-600 hover:text-white"
           >
             <ChefHat className="w-4 h-4 mr-2" /> Group Game
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={() => router.push(`/protected/groups/${groupId}/manual-meal`)} 
+            className="w-full sm:w-auto border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white"
+          >
+            <Utensils className="w-4 h-4 mr-2" /> Register Meal
           </Button>
         </div>
       </div>

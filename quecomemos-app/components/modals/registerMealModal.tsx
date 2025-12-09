@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { X, Plus } from 'lucide-react';
+import { X, Plus, ShieldOff, AlertTriangle } from 'lucide-react';
 import { useUser } from '@/lib/contexts/UserContext';
 import { useMeals, Meal } from '@/lib/contexts/MealsContext';
 import AddMealForm from '../meal/AddMealForm';
@@ -12,6 +12,7 @@ import { fetchGroupDietaryInfo } from '@/lib/utils/groupService';
 import { Group } from '../groups/index';
 import { DietaryAlert, CalorieSemaphore } from '@/components/alerts';
 import { useMealWithAlerts } from '@/lib/hooks/useMealWithAlerts';
+import { useCalorieProgress } from '@/lib/hooks/useKcalProgress';
 
 interface GroupDietaryInfo {
   dietaryRestrictions: Array<{
@@ -38,6 +39,7 @@ interface RegisterMealModalProps {
 export function RegisterMealModal({ isOpen, onClose, onSubmit, group }: RegisterMealModalProps) {
   const { userData } = useUser();
   const { allMeals, addMeal } = useMeals();
+  const { progress } = useCalorieProgress();
   
   // Form state
   const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
@@ -284,75 +286,6 @@ export function RegisterMealModal({ isOpen, onClose, onSubmit, group }: Register
                 {selectedMeal && (
                   <div className="space-y-3">
                     <MealComposition meal={selectedMeal} />
-                    
-                    {/* Dietary and Calorie Alerts */}
-                    {mealWithAlerts && (
-                      <div className="space-y-3 p-3 bg-neutral-800/50 rounded-lg border border-neutral-700">
-                        {/* Dietary Alert */}
-                        {mealWithAlerts.dietaryFitness && (
-                          <div className="space-y-2">
-                            <DietaryAlert 
-                              isFit={mealWithAlerts.dietaryFitness.isFit}
-                              conflicts={mealWithAlerts.dietaryFitness.conflicts}
-                              size="md"
-                            />
-                            
-                            {/* Ignore Dietary Warnings Button */}
-                            {!mealWithAlerts.dietaryFitness.isFit && (
-                              <button
-                                type="button"
-                                onClick={() => setIgnoreDietaryWarnings(!ignoreDietaryWarnings)}
-                                className={`w-full px-3 py-2 text-sm font-medium rounded-lg border-2 transition-all ${
-                                  ignoreDietaryWarnings
-                                    ? 'bg-orange-600 border-orange-500 text-white hover:bg-orange-700'
-                                    : 'bg-neutral-700 border-neutral-600 text-gray-300 hover:bg-neutral-600'
-                                }`}
-                              >
-                                {ignoreDietaryWarnings
-                                  ? '⚠️ Ignoring dietary warnings - Click to re-enable'
-                                  : '🔓 Ignore dietary restrictions for this meal'}
-                              </button>
-                            )}
-                          </div>
-                        )}
-                        
-                        {/* Calorie Semaphore with Portion Consideration */}
-                        {mealWithAlerts.totalKcal !== undefined && profile?.calorie_goal && (
-                          <div className="space-y-2">
-                            <p className="text-xs text-gray-400 font-medium">Nutritional Impact:</p>
-                            <CalorieSemaphore 
-                              status={
-                                (() => {
-                                  const portionFraction = portionMode === 'partial' && selectedPortions 
-                                    ? selectedPortions.portionFraction 
-                                    : 1;
-                                  const adjustedCalories = mealWithAlerts.totalKcal * portionFraction;
-                                  const dailyGoal = profile.calorie_goal || 2000;
-                                  const mealThreshold = dailyGoal / 3;
-                                  const redThreshold = (dailyGoal * 4) / 3;
-                                  
-                                  if (adjustedCalories <= mealThreshold) return 'green';
-                                  if (adjustedCalories > redThreshold) return 'red';
-                                  return 'yellow';
-                                })()
-                              }
-                              calories={Math.round(
-                                mealWithAlerts.totalKcal * 
-                                (portionMode === 'partial' && selectedPortions 
-                                  ? selectedPortions.portionFraction 
-                                  : 1)
-                              )}
-                              size="md"
-                            />
-                            {portionMode === 'partial' && selectedPortions && (
-                              <p className="text-xs text-gray-400">
-                                Based on {(selectedPortions.portionFraction * 100).toFixed(0)}% portion
-                              </p>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    )}
                   </div>
                 )}
 
@@ -403,6 +336,79 @@ export function RegisterMealModal({ isOpen, onClose, onSubmit, group }: Register
                         </div>
                       </button>
                     </div>
+                  </div>
+                )}
+
+                {/* Dietary and Calorie Alerts - Below Portion Selection */}
+                {selectedMeal && mealWithAlerts && (
+                  <div className="space-y-3 p-3 bg-neutral-800/50 rounded-lg border border-neutral-700">
+                    {/* Dietary Alert */}
+                    {mealWithAlerts.dietaryFitness && (
+                      <div className="space-y-2">
+                        <DietaryAlert 
+                          isFit={mealWithAlerts.dietaryFitness.isFit}
+                          conflicts={mealWithAlerts.dietaryFitness.conflicts}
+                          size="md"
+                        />
+                        
+                        {/* Ignore Dietary Warnings Button */}
+                        {!mealWithAlerts.dietaryFitness.isFit && (
+                          <button
+                            type="button"
+                            onClick={() => setIgnoreDietaryWarnings(!ignoreDietaryWarnings)}
+                            className={`w-full px-3 py-2 text-sm font-medium rounded-lg border-2 transition-all flex items-center justify-center gap-2 ${
+                              ignoreDietaryWarnings
+                                ? 'bg-orange-600 border-orange-500 text-white hover:bg-orange-700'
+                                : 'bg-neutral-700 border-neutral-600 text-gray-300 hover:bg-neutral-600'
+                            }`}
+                          >
+                            {ignoreDietaryWarnings ? (
+                              <>
+                                <AlertTriangle className="w-4 h-4" />
+                                Ignoring dietary warnings - Click to re-enable
+                              </>
+                            ) : (
+                              <>
+                                <ShieldOff className="w-4 h-4" />
+                                Ignore dietary restrictions for this meal
+                              </>
+                            )}
+                          </button>
+                        )}
+                      </div>
+                    )}
+                    
+                    {/* Calorie Semaphore with Portion Consideration */}
+                    {mealWithAlerts && mealWithAlerts.totalKcal !== undefined && (
+                      <div className="space-y-2">
+                        <p className="text-xs text-gray-400 font-medium">Calorie Impact:</p>
+                        <CalorieSemaphore 
+                          status={
+                            (() => {
+                              const dailyGoal = progress?.goal || 2000;
+                              const portionFraction = portionMode === 'partial' && selectedPortions 
+                                ? selectedPortions.portionFraction 
+                                : 1;
+                              const adjustedCalories = mealWithAlerts.totalKcal * portionFraction;
+                              const mealThreshold = dailyGoal / 3; // 33% for green
+                              const redThreshold = (dailyGoal * 4) / 3; // 133% for red
+                              
+                              if (adjustedCalories <= mealThreshold) return 'green';
+                              if (adjustedCalories > redThreshold) return 'red';
+                              return 'yellow';
+                            })()
+                          }
+                          calories={Math.round(
+                            mealWithAlerts.totalKcal * 
+                            (portionMode === 'partial' && selectedPortions 
+                              ? selectedPortions.portionFraction 
+                              : 1)
+                          )}
+                          size="md"
+                          showLabel={true}
+                        />
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -591,7 +597,7 @@ export function RegisterMealModal({ isOpen, onClose, onSubmit, group }: Register
                   {/* Dietary warning reminder in date/time section */}
                   {!ignoreDietaryWarnings && mealWithAlerts?.dietaryFitness && !mealWithAlerts.dietaryFitness.isFit && (
                     <p className="text-xs text-orange-400 text-center font-medium">
-                      ⚠️ Dietary conflicts detected. Return to meal selection and enable "Ignore dietary restrictions" to proceed.
+                      ⚠️ Dietary conflicts detected. Return to meal selection and enable &quot;Ignore dietary restrictions&quot; to proceed.
                     </p>
                   )}
                 </div>

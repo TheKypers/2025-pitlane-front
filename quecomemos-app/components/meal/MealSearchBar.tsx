@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { Search, X, Plus, ChevronDown, Info } from 'lucide-react';
+import { Search, X, Plus, ChevronDown, Info, Lock, Unlock } from 'lucide-react';
 import { Meal } from '@/lib/contexts/MealsContext';
 import { CalorieRangeSlider } from '@/components/common/sliders';
 import { MultiSelect } from '@/components/common/MultiSelect';
@@ -372,13 +372,23 @@ export function MealSearchBar({
             <button
               type="button"
               onClick={() => setApplyDietaryFilter(!applyDietaryFilter)}
-              className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
+              className={`px-3 py-1 text-xs font-medium rounded transition-colors flex items-center gap-1.5 ${
                 applyDietaryFilter
                   ? 'bg-blue-600 text-white hover:bg-blue-700'
                   : 'bg-orange-600 text-white hover:bg-orange-700'
               }`}
             >
-              {applyDietaryFilter ? '🔒 Filter Active' : '🔓 Show All'}
+              {applyDietaryFilter ? (
+                <>
+                  <Lock className="w-3 h-3" />
+                  Filter Active
+                </>
+              ) : (
+                <>
+                  <Unlock className="w-3 h-3" />
+                  Show All
+                </>
+              )}
             </button>
           </div>
         </div>

@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Minus } from 'lucide-react';
 import Image from 'next/image';
+import { CalorieSemaphore } from '@/components/alerts';
+import { useUser } from '@/lib/contexts/UserContext';
+import { useCalorieProgress } from '@/lib/hooks/useKcalProgress';
 
 interface MealFood {
   foodId: number;
@@ -45,6 +48,10 @@ export function MealPortionSelector({
   onCancel,
   loading = false
 }: MealPortionSelectorProps) {
+  const { userData } = useUser();
+  const profile = userData?.profile;
+  const { progress } = useCalorieProgress();
+  
   console.log('[MealPortionSelector] Initialized with meal:', {
     mealId: meal.mealId,
     name: meal.name,
@@ -222,11 +229,23 @@ export function MealPortionSelector({
   const totalCalories = calculateCalories();
   const mealPortionPercentage = (calculateMealPortionFraction() * 100).toFixed(0);
 
+  // Calculate calorie semaphore status
+  const calculateSemaphoreStatus = (): 'green' | 'yellow' | 'red' => {
+    const dailyGoal = progress?.goal || 2000;
+    
+    const mealThreshold = dailyGoal / 3;
+    const redThreshold = (dailyGoal * 4) / 3;
+    
+    if (totalCalories <= mealThreshold) return 'green';
+    if (totalCalories > redThreshold) return 'red';
+    return 'yellow';
+  };
+
   return (
     <div className="space-y-6">
       {/* Meal Portion Summary */}
-      <div className="bg-amber-900/20 border border-amber-700/50 p-4 rounded-lg">
-        <div className="flex justify-between items-center mb-2">
+      <div className="bg-amber-900/20 border border-amber-700/50 p-4 rounded-lg space-y-3">
+        <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
             <span className="font-semibold text-amber-200">Total Meal Portion</span>
@@ -234,7 +253,7 @@ export function MealPortionSelector({
           </div>
           <span className="text-2xl font-bold text-amber-400">{mealPortionPercentage}%</span>
         </div>
-        <div className="flex justify-between items-center text-sm text-neutral-300 mt-2 pt-2 border-t border-amber-700/30">
+        <div className="flex justify-between items-center text-sm text-neutral-300 pt-2 border-t border-amber-700/30">
           <span>Total Calories</span>
           <span className="font-medium">
             <span className="text-amber-400 font-bold">{totalCalories.toFixed(0)}</span>
@@ -242,6 +261,19 @@ export function MealPortionSelector({
             <span className="text-neutral-400"> kcal</span>
           </span>
         </div>
+        
+        {/* Calorie Semaphore */}
+        {progress?.goal && (
+          <div className="pt-2 border-t border-amber-700/30">
+            <p className="text-xs text-gray-400 font-medium mb-2">Calorie Impact:</p>
+            <CalorieSemaphore 
+              status={calculateSemaphoreStatus()}
+              calories={Math.round(totalCalories)}
+              size="md"
+              showLabel={true}
+            />
+          </div>
+        )}
       </div>
 
       {/* Food List */}

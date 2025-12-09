@@ -8,6 +8,8 @@ import AddMealForm from '@/components/meal/AddMealForm';
 import { useMeals, Meal } from '@/lib/contexts/MealsContext';
 import { useUser } from '@/lib/contexts/UserContext';
 import { fetchGroupDietaryInfo } from '@/lib/utils/groupService';
+import { DietaryAlert, CalorieSemaphore } from '@/components/alerts';
+import { useMealWithAlerts } from '@/lib/hooks/useMealWithAlerts';
 
 interface GroupDietaryInfo {
   dietaryRestrictions: Array<{
@@ -43,6 +45,10 @@ export function ProposeGameMealModal({
   const userRestrictions = userData?.preferences?.dietaryRestrictions || [];
   const groupRestrictions =
     groupDietaryInfo?.dietaryRestrictions?.map((r) => r.DietaryRestrictionID) || [];
+  const profile = userData?.profile;
+
+  // Fetch meal details with alerts when meal is selected
+  const { meal: mealWithAlerts } = useMealWithAlerts(selectedMeal?.MealID || 0);
 
   // Fetch group dietary info when modal opens
   React.useEffect(() => {
@@ -139,6 +145,32 @@ export function ProposeGameMealModal({
                   <div className="bg-neutral-800/50 rounded-xl p-4 border border-amber-700/30">
                     <MealComposition meal={selectedMeal} />
                   </div>
+                  
+                  {/* Dietary and Calorie Alerts - Below Meal Composition */}
+                  {mealWithAlerts && (
+                    <div className="space-y-3 p-3 bg-neutral-800/50 rounded-lg border border-neutral-700">
+                      {/* Dietary Alert */}
+                      {mealWithAlerts.dietaryFitness && (
+                        <DietaryAlert 
+                          isFit={mealWithAlerts.dietaryFitness.isFit}
+                          conflicts={mealWithAlerts.dietaryFitness.conflicts}
+                          size="md"
+                        />
+                      )}
+                      
+                      {/* Calorie Semaphore */}
+                      {mealWithAlerts.totalKcal !== undefined && profile?.calorie_goal && (
+                        <div className="space-y-2">
+                          <p className="text-xs text-gray-400 font-medium">Nutritional Impact:</p>
+                          <CalorieSemaphore 
+                            status={mealWithAlerts.calorieStatus || 'green'}
+                            calories={mealWithAlerts.totalKcal}
+                            size="md"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
             </>

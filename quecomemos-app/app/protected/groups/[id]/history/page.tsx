@@ -9,6 +9,7 @@ import { API_BASE_URL } from '@/lib/config/api';
 import { RecentActivity } from '@/components/groups/RecentActivity';
 import { VotingHistorySection } from '@/components/voting/VotingHistorySection';
 import { GameHistorySection } from '@/components/games/clicker-game/GameHistorySection';
+import { RegistrationHistorySection } from '@/components/registration/RegistrationHistorySection';
 
 interface MealConsumption {
   MealConsumptionID: number;
@@ -172,13 +173,16 @@ export default function GroupHistoryPage() {
         </div>
       </div>
       
-      {/* Voting & Game History Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Voting, Game, & Registration History Section */}
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
         {/* Recent Voting Sessions */}
         <VotingHistorySection groupId={parseInt(groupId)} />
 
         {/* Recent Game Sessions */}
         <GameHistorySection groupId={parseInt(groupId)} />
+
+        {/* Recent Registration Sessions */}
+        <RegistrationHistorySection groupId={parseInt(groupId)} />
       </div>
 
       {/* Meal Consumption History */}

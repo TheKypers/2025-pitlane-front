@@ -7,6 +7,7 @@ import { VotingService } from './VotingService';
 import { GameHistoryService } from '@/components/games/clicker-game/GameHistoryService';
 import { useGlobalNotification } from '@/lib/contexts/NotificationContext';
 import { MealPortionSelector, type PortionData } from '@/components/meal';
+import { API_BASE_URL } from '@/lib/config/api';
 
 interface MealFood {
   foodId: number;
@@ -24,7 +25,7 @@ interface WinnerMeal {
   totalCalories: number;
 }
 
-interface PortionSelectionModalProps {
+export interface PortionSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
   sessionId: number;
@@ -35,6 +36,9 @@ interface PortionSelectionModalProps {
   mealId?: number;
   mealName?: string;
   isGameSession?: boolean;
+  // For group registration
+  isRegistration?: boolean;
+  groupConsumptionId?: number;
   onSuccess?: () => void;
 }
 
@@ -47,6 +51,8 @@ export function PortionSelectionModal({
   mealId,
   mealName,
   isGameSession = false,
+  isRegistration = false,
+  groupConsumptionId,
   onSuccess,
 }: PortionSelectionModalProps) {
   const { showSuccess, showError } = useGlobalNotification();
@@ -55,6 +61,8 @@ export function PortionSelectionModal({
   const handlePortionConfirm = async (portionData: PortionData) => {
     console.log('[PortionSelectionModal] Confirming portion:', {
       isGameSession,
+      isRegistration,
+      groupConsumptionId,
       mealId,
       sessionId,
       userId,
@@ -68,7 +76,28 @@ export function PortionSelectionModal({
     
     setLoading(true);
     try {
-      if (isGameSession && mealId) {
+      if (isRegistration && groupConsumptionId) {
+        // Group registration portion selection
+        const response = await fetch(
+          `${API_BASE_URL}/meal-consumptions/group/${groupConsumptionId}/portions`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              profileId: userId,
+              portionFraction: portionData.portionFraction,
+              foodPortions: portionData.foodPortions
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to select portion');
+        }
+      } else if (isGameSession && mealId) {
         // Game session portion registration
         console.log('[PortionSelectionModal] Calling GameHistoryService with:', {
           sessionId,
@@ -143,7 +172,7 @@ export function PortionSelectionModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/70">
       <div className="relative w-full max-w-2xl bg-neutral-900 rounded-2xl shadow-2xl border border-amber-800/30 overflow-hidden max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <CardHeader className={`p-6 border-b ${

@@ -36,10 +36,10 @@ export default function RouletteWheel({ meals, winnerId, onSpinComplete }: Roule
     // Draw segments
     const segmentAngle = (2 * Math.PI) / meals.length;
     const colors = [
-      '#8B5CF6', // purple-500
-      '#A78BFA', // purple-400
-      '#C4B5FD', // purple-300
-      '#DDD6FE', // purple-200
+      '#F97316', // orange-500
+      '#FB923C', // orange-400
+      '#FDBA74', // orange-300
+      '#FED7AA', // orange-200
     ];
 
     meals.forEach((meal, index) => {
@@ -88,7 +88,7 @@ export default function RouletteWheel({ meals, winnerId, onSpinComplete }: Roule
     // Draw outer border
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-    ctx.strokeStyle = '#F59E0B'; // amber-500
+    ctx.strokeStyle = '#EAB308'; // yellow-500
     ctx.lineWidth = 6;
     ctx.stroke();
   }, [meals]);
@@ -155,14 +155,14 @@ export default function RouletteWheel({ meals, winnerId, onSpinComplete }: Roule
   };
 
   return (
-    <Card className="bg-gradient-to-br from-purple-900/60 to-purple-950/80 border-purple-700/50 p-8">
+    <Card className="bg-gradient-to-br from-orange-900/60 to-orange-950/80 border-orange-700/50 p-8">
       <div className="flex flex-col items-center space-y-6">
-        <h2 className="text-3xl font-bold text-purple-300">🎰 Roulette Wheel</h2>
+        <h2 className="text-3xl font-bold text-orange-300">🎰 Roulette Wheel</h2>
         
         {/* Pointer at top */}
         <div className="relative">
           <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 z-10">
-            <div className="w-0 h-0 border-l-[20px] border-l-transparent border-r-[20px] border-r-transparent border-t-[30px] border-t-amber-500"></div>
+            <div className="w-0 h-0 border-l-[20px] border-l-transparent border-r-[20px] border-r-transparent border-t-[30px] border-t-yellow-500"></div>
           </div>
 
           {/* Canvas */}
@@ -172,7 +172,7 @@ export default function RouletteWheel({ meals, winnerId, onSpinComplete }: Roule
             height={500}
             className="rounded-full shadow-2xl"
             style={{
-              boxShadow: '0 0 60px rgba(139, 92, 246, 0.5)',
+              boxShadow: '0 0 60px rgba(249, 115, 22, 0.5)',
             }}
           />
         </div>
@@ -180,20 +180,20 @@ export default function RouletteWheel({ meals, winnerId, onSpinComplete }: Roule
         {!isSpinning && !hasSpun && (
           <button
             onClick={spinWheel}
-            className="px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white text-xl font-bold rounded-lg shadow-lg transition-all transform hover:scale-105"
+            className="px-8 py-4 bg-orange-500 hover:bg-orange-600 text-white text-xl font-bold rounded-lg shadow-lg transition-all transform hover:scale-105"
           >
             🎲 SPIN!
           </button>
         )}
 
         {isSpinning && (
-          <div className="text-purple-300 text-xl font-semibold animate-pulse">
+          <div className="text-orange-300 text-xl font-semibold animate-pulse">
             Spinning...
           </div>
         )}
         
         {!isSpinning && hasSpun && (
-          <div className="text-purple-300 text-xl font-semibold">
+          <div className="text-orange-300 text-xl font-semibold">
             🎉 Winner determined!
           </div>
         )}

@@ -328,7 +328,7 @@ export default function GamePlayPage() {
   if (loading) {
     return (
       <div className="container mx-auto p-6 flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
+        <Loader2 className="w-8 h-8 animate-spin text-yellow-500" />
       </div>
     );
   }
@@ -336,8 +336,8 @@ export default function GamePlayPage() {
   if (countdown !== null && gameSession?.gameType === 'egg_clicker') {
     return (
       <div className="container mx-auto p-6 flex flex-col items-center justify-center min-h-[80vh] space-y-8">
-        <h2 className="text-4xl font-bold text-amber-400">Get Ready!</h2>
-        <div className="text-9xl font-bold text-green-400 animate-pulse">
+        <h2 className="text-4xl font-bold text-yellow-400">Get Ready!</h2>
+        <div className="text-9xl font-bold text-yellow-500 animate-pulse">
           {countdown}
         </div>
         <p className="text-xl text-gray-300">Click as fast as you can!</p>
@@ -350,23 +350,23 @@ export default function GamePlayPage() {
     
     return (
       <div className="container mx-auto p-6 flex flex-col items-center justify-center min-h-[80vh] space-y-6">
-        <Trophy className="w-24 h-24 text-amber-400" />
-        <h2 className="text-4xl font-bold text-amber-400">Time&apos;s Up!</h2>
-        <Card className="bg-gradient-to-br from-green-900/40 to-green-950/60 border-green-700/50 max-w-md">
+        <Trophy className="w-24 h-24 text-yellow-400" />
+        <h2 className="text-4xl font-bold text-yellow-400">Time&apos;s Up!</h2>
+        <Card className="bg-gradient-to-br from-yellow-900/40 to-yellow-950/60 border-yellow-700/50 max-w-md">
           <CardContent className="p-8 text-center space-y-4">
-            <p className="text-6xl font-bold text-green-400">{clickCount}</p>
+            <p className="text-6xl font-bold text-yellow-400">{clickCount}</p>
             <p className="text-xl text-gray-300">clicks</p>
             <div className="text-sm text-gray-400 mt-4">
               {gameSession?.participants.filter(p => p.hasSubmitted).length} / {gameSession?.participants.length} players submitted
             </div>
-            <Loader2 className="w-6 h-6 animate-spin text-amber-500 mx-auto mt-4" />
+            <Loader2 className="w-6 h-6 animate-spin text-yellow-500 mx-auto mt-4" />
             <p className="text-sm text-gray-400">Waiting for all players...</p>
             
             {isHost && gameSession?.participants.some(p => p.hasSubmitted) && (
               <Button
                 onClick={handleForceComplete}
                 variant="outline"
-                className="mt-4 border-amber-600 text-amber-600 hover:bg-amber-600 hover:text-white"
+                className="mt-4 border-yellow-600 text-yellow-600 hover:bg-yellow-600 hover:text-white"
               >
                 Force Complete (Skip Waiting)
               </Button>
@@ -415,22 +415,22 @@ export default function GamePlayPage() {
       <div className="container mx-auto p-6 space-y-6">
         {/* Header */}
         <div className="flex justify-between items-center">
-          <Card className="bg-gradient-to-r from-purple-900/40 to-purple-950/60 border-purple-700/50 px-6 py-3">
+          <Card className="bg-gradient-to-r from-orange-900/40 to-orange-950/60 border-orange-700/50 px-6 py-3">
             <div className="flex items-center gap-3">
-              <RotateCw className="w-6 h-6 text-purple-300" />
+              <RotateCw className="w-6 h-6 text-orange-300" />
               <div>
                 <p className="text-xs text-gray-400">Roulette</p>
-                <p className="text-3xl font-bold text-purple-300">Proposed Meals</p>
+                <p className="text-3xl font-bold text-orange-300">Proposed Meals</p>
               </div>
             </div>
           </Card>
 
-          <Card className="bg-gradient-to-r from-amber-900/40 to-amber-950/60 border-amber-700/50 px-6 py-3">
+          <Card className="bg-gradient-to-r from-yellow-900/40 to-yellow-950/60 border-yellow-700/50 px-6 py-3">
             <div className="flex items-center gap-3">
-              <Users className="w-6 h-6 text-amber-400" />
+              <Users className="w-6 h-6 text-yellow-400" />
               <div>
                 <p className="text-xs text-gray-400">Players</p>
-                <p className="text-3xl font-bold text-amber-400">{gameSession?.participants.length}</p>
+                <p className="text-3xl font-bold text-yellow-400">{gameSession?.participants.length}</p>
               </div>
             </div>
           </Card>
@@ -445,7 +445,7 @@ export default function GamePlayPage() {
                   <div className="flex flex-col">
                     <span className="text-gray-200">{p.profile.username}</span>
                     {p.meal ? (
-                      <span className="text-xs text-purple-300 mt-1">🍽️ {p.meal.name}</span>
+                      <span className="text-xs text-orange-300 mt-1">🍽️ {p.meal.name}</span>
                     ) : (
                       <span className="text-xs text-gray-500 mt-1">No meal proposed</span>
                     )}
@@ -462,7 +462,7 @@ export default function GamePlayPage() {
             <Button
               onClick={handleSpinRoulette}
               disabled={spinning || hasSeenRouletteAnimation.current || !gameSession?.participants.some(p => p.mealId)}
-              className="bg-purple-600 hover:bg-purple-700 text-white disabled:opacity-50"
+              className="bg-orange-500 hover:bg-orange-600 text-white disabled:opacity-50"
             >
               {spinning || hasSeenRouletteAnimation.current ? 'Spinning...' : 'Spin Roulette'}
             </Button>
@@ -476,24 +476,24 @@ export default function GamePlayPage() {
     <div className="container mx-auto p-6 space-y-6">
       {/* Timer and Score Header */}
       <div className="flex justify-between items-center">
-        <Card className="bg-gradient-to-r from-amber-900/40 to-amber-950/60 border-amber-700/50 px-6 py-3">
+        <Card className="bg-gradient-to-r from-yellow-900/40 to-yellow-950/60 border-yellow-700/50 px-6 py-3">
           <div className="flex items-center gap-3">
-            <span className="text-amber-400 text-2xl font-bold">⏱️</span>
+            <span className="text-yellow-400 text-2xl font-bold">⏱️</span>
             <div>
               <p className="text-xs text-gray-400">Time Remaining</p>
-              <p className="text-3xl font-bold text-amber-400">
+              <p className="text-3xl font-bold text-yellow-400">
                 {timeRemaining !== null ? timeRemaining : gameSession?.duration}s
               </p>
             </div>
           </div>
         </Card>
 
-        <Card className="bg-gradient-to-r from-green-900/40 to-green-950/60 border-green-700/50 px-6 py-3">
+        <Card className="bg-gradient-to-r from-yellow-900/40 to-yellow-950/60 border-yellow-700/50 px-6 py-3">
           <div className="flex items-center gap-3">
-            <span className="text-green-400 text-2xl font-bold">🏆</span>
+            <span className="text-yellow-400 text-2xl font-bold">🏆</span>
             <div>
               <p className="text-xs text-gray-400">Your Score</p>
-              <p className="text-3xl font-bold text-green-400">{clickCount}</p>
+              <p className="text-3xl font-bold text-yellow-400">{clickCount}</p>
             </div>
           </div>
         </Card>
@@ -501,20 +501,20 @@ export default function GamePlayPage() {
 
       {/* Egg Clicker Area */}
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-8">
-        <h2 className="text-3xl font-bold text-amber-400">Click the Egg!</h2>
+        <h2 className="text-3xl font-bold text-yellow-400">Click the Egg!</h2>
         
         <div className="relative">
           <Button
             onClick={handleEggClick}
             disabled={gameSession?.status !== 'playing'}
-            className={`w-64 h-64 rounded-full bg-gradient-to-br from-amber-100 to-amber-300 hover:from-amber-200 hover:to-amber-400 
-                       border-4 border-amber-600 shadow-2xl transition-all duration-100 relative overflow-hidden
+            className={`w-64 h-64 rounded-full bg-gradient-to-br from-yellow-100 to-yellow-300 hover:from-yellow-200 hover:to-yellow-400 
+                       border-4 border-yellow-600 shadow-2xl transition-all duration-100 relative overflow-hidden
                        ${eggShaking ? 'scale-95' : 'scale-100'}`}
             style={{
-              boxShadow: '0 10px 40px rgba(251, 191, 36, 0.4)',
+              boxShadow: '0 10px 40px rgba(234, 179, 8, 0.4)',
             }}
           >
-            <Egg className="w-32 h-32 text-amber-800" />
+            <Egg className="w-32 h-32 text-yellow-800" />
             
             {/* Crack effects */}
             {Array.from({ length: eggCracks }).map((_, i) => (
@@ -531,7 +531,7 @@ export default function GamePlayPage() {
 
           {/* Click ripple effect */}
           {eggShaking && (
-            <div className="absolute inset-0 rounded-full border-8 border-green-400 animate-ping opacity-75" />
+            <div className="absolute inset-0 rounded-full border-8 border-yellow-400 animate-ping opacity-75" />
           )}
         </div>
 
@@ -542,7 +542,7 @@ export default function GamePlayPage() {
         {/* Players list */}
         <Card className="bg-zinc-900/60 border-zinc-700/50 max-w-md w-full">
           <CardContent className="p-4">
-            <h3 className="text-sm font-semibold text-amber-200 mb-3">Players</h3>
+            <h3 className="text-sm font-semibold text-yellow-400 mb-3">Players</h3>
             <div className="space-y-2">
               {gameSession?.participants.map((participant) => (
                 <div

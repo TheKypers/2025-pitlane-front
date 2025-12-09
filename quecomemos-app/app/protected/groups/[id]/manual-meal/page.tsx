@@ -167,7 +167,7 @@ export default function GroupManualMealPage() {
           <ArrowLeft className="w-4 h-4" />
         </Button>
         <div className="flex-1">
-          <h1 className="text-3xl font-bold text-amber-200">Register Manual Group Meal</h1>
+          <h1 className="text-3xl font-bold text-orange-400">Register Manual Group Meal</h1>
           <p className="text-muted-foreground mt-1">
             for {group.name}
           </p>
@@ -175,9 +175,9 @@ export default function GroupManualMealPage() {
       </div>
 
       {/* Instructions */}
-      <Card className="bg-amber-900/20 border-amber-700/30">
+      <Card className="bg-orange-900/20 border-orange-700/30">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-amber-200">
+          <CardTitle className="flex items-center gap-2 text-orange-400">
             <Utensils className="w-5 h-5" />
             How it works
           </CardTitle>
@@ -185,16 +185,16 @@ export default function GroupManualMealPage() {
         <CardContent>
           <ol className="space-y-2 text-sm text-neutral-300">
             <li className="flex items-start gap-2">
-              <span className="text-amber-400 font-bold min-w-[1.5rem]">1.</span>
+              <span className="text-orange-400 font-bold min-w-[1.5rem]">1.</span>
               <span>Select a meal that the group consumed together</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-amber-400 font-bold min-w-[1.5rem]">2.</span>
+              <span className="text-orange-400 font-bold min-w-[1.5rem]">2.</span>
               <span>The meal will be registered as a group meal</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-amber-400 font-bold min-w-[1.5rem]">3.</span>
-              <span>Each member can select their portion from the <strong className="text-amber-300">History</strong> below</span>
+              <span className="text-orange-400 font-bold min-w-[1.5rem]">3.</span>
+              <span>Each member can select their portion from the <strong className="text-orange-300">History</strong> below</span>
             </li>
           </ol>
         </CardContent>
@@ -218,7 +218,7 @@ export default function GroupManualMealPage() {
           {selectedMeal && (
             <div className="space-y-4 mt-6">
               <div className="border-t border-neutral-700 pt-4">
-                <h3 className="text-lg font-semibold text-amber-200 mb-3">
+                <h3 className="text-lg font-semibold text-orange-400 mb-3">
                   Selected Meal
                 </h3>
                 <MealComposition meal={selectedMeal} />
@@ -269,7 +269,7 @@ export default function GroupManualMealPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Users className="w-5 h-5 text-purple-400" />
+              <Users className="w-5 h-5 text-orange-400" />
               Group Members ({group.members.length})
             </CardTitle>
           </CardHeader>
@@ -283,7 +283,7 @@ export default function GroupManualMealPage() {
                   key={member.GroupMemberID}
                   className="flex items-center gap-2 px-3 py-2 bg-neutral-800 border border-neutral-700 rounded text-sm"
                 >
-                  <CheckCircle className="w-4 h-4 text-purple-400" />
+                  <CheckCircle className="w-4 h-4 text-orange-400" />
                   <span>{member.profile.username}</span>
                 </div>
               ))}
@@ -304,7 +304,7 @@ export default function GroupManualMealPage() {
         <Button
           onClick={handleRegister}
           disabled={!selectedMeal || submitting}
-          className="bg-amber-600 hover:bg-amber-700 text-white disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          className="bg-orange-500 hover:bg-orange-600 text-white disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         >
           {submitting ? (
             <>

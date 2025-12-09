@@ -250,11 +250,11 @@ export default function GameLobbyPage() {
           {/* Game Selection Cards */}
           <div className="grid gap-6 md:grid-cols-2">
             <Card 
-              className="cursor-pointer transition-all hover:scale-105 hover:border-green-500 bg-gradient-to-br from-green-900/20 to-green-950/40 border-green-700/50"
+              className="cursor-pointer transition-all hover:scale-105 hover:border-yellow-500 bg-gradient-to-br from-yellow-900/20 to-yellow-950/40 border-yellow-700/50"
               onClick={() => createGame('egg_clicker')}
             >
               <CardHeader>
-                <CardTitle className="flex items-center gap-3 text-green-400">
+                <CardTitle className="flex items-center gap-3 text-yellow-400">
                   <Egg className="w-8 h-8" />
                   Egg Clicker
                 </CardTitle>
@@ -275,11 +275,11 @@ export default function GameLobbyPage() {
             </Card>
 
           <Card 
-            className="cursor-pointer transition-all hover:scale-105 hover:border-purple-500 bg-gradient-to-br from-purple-900/20 to-purple-950/40 border-purple-700/50"
+            className="cursor-pointer transition-all hover:scale-105 hover:border-orange-500 bg-gradient-to-br from-orange-900/20 to-orange-950/40 border-orange-700/50"
             onClick={() => createGame('roulette')}
           >
             <CardHeader>
-              <CardTitle className="flex items-center gap-3 text-purple-400">
+              <CardTitle className="flex items-center gap-3 text-orange-400">
                 <RotateCw className="w-8 h-8" />
                 Roulette
               </CardTitle>
@@ -302,9 +302,9 @@ export default function GameLobbyPage() {
       ) : gameSession ? (
         <div className="max-w-4xl mx-auto space-y-6">
           {/* Game Info Card */}
-          <Card className="bg-gradient-to-br from-amber-900/20 to-amber-950/40 border-amber-700/50">
+          <Card className="bg-gradient-to-br from-yellow-900/20 to-yellow-950/40 border-yellow-700/50">
             <CardHeader>
-              <CardTitle className="flex items-center gap-3 text-amber-400">
+              <CardTitle className="flex items-center gap-3 text-yellow-400">
                 <Gamepad2 className="w-6 h-6" />
                 {gameSession.gameType === 'egg_clicker' ? 'Egg Clicker' : 'Roulette'}
               </CardTitle>
@@ -322,7 +322,7 @@ export default function GameLobbyPage() {
               </div>
 
               <div className="text-sm text-gray-400">
-                Host: <span className="text-amber-400">{gameSession.host.username}</span>
+                Host: <span className="text-yellow-400">{gameSession.host.username}</span>
               </div>
 
               {gameSession.status === 'waiting' && (
@@ -331,7 +331,7 @@ export default function GameLobbyPage() {
                 </div>
               )}
               {gameSession.status === 'ready' && (
-                <div className="text-sm text-amber-400">
+                <div className="text-sm text-yellow-400">
                   ✓ All players ready! Host can start the game.
                 </div>
               )}
@@ -341,7 +341,7 @@ export default function GameLobbyPage() {
           {/* Players Card */}
           <Card className="bg-zinc-900/60 border-zinc-700/50">
             <CardHeader>
-              <CardTitle className="text-amber-200">Players</CardTitle>
+              <CardTitle className="text-yellow-400">Players</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
@@ -352,24 +352,24 @@ export default function GameLobbyPage() {
                   >
                     <div className="flex items-center gap-3 flex-1">
                       <div className={`w-3 h-3 rounded-full ${
-                        participant.isReady ? 'bg-amber-500' : 'bg-gray-500'
+                        participant.isReady ? 'bg-yellow-500' : 'bg-gray-500'
                       }`} />
                       <div className="flex flex-col flex-1">
                         <span className="text-gray-200">
                           {participant.profile.username}
                           {participant.profileId === gameSession.hostId && (
-                            <span className="ml-2 text-xs text-amber-400">(Host)</span>
+                            <span className="ml-2 text-xs text-yellow-400">(Host)</span>
                           )}
                         </span>
                         {participant.meal && (
-                          <span className="text-xs text-amber-400 flex items-center gap-1 mt-1">
+                          <span className="text-xs text-yellow-400 flex items-center gap-1 mt-1">
                             🍽️ {participant.meal.name}
                           </span>
                         )}
                       </div>
                     </div>
                     {participant.isReady && (
-                      <span className="text-amber-400 text-sm">Ready</span>
+                      <span className="text-yellow-400 text-sm">Ready</span>
                     )}
                   </div>
                 ))}
@@ -384,7 +384,7 @@ export default function GameLobbyPage() {
                 <Button
                   onClick={joinGame}
                   disabled={joiningGame}
-                  className="bg-amber-600 hover:bg-amber-700 text-white disabled:opacity-50"
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white disabled:opacity-50"
                 >
                   {joiningGame ? 'Joining...' : 'Join Game'}
                 </Button>
@@ -404,8 +404,8 @@ export default function GameLobbyPage() {
                   onClick={toggleReady}
                   variant={currentParticipant.isReady ? 'outline' : 'default'}
                   className={currentParticipant.isReady ? 
-                    'border-amber-500 text-amber-500' : 
-                    'bg-amber-600 hover:bg-amber-700 text-white'
+                    'border-yellow-500 text-yellow-500' : 
+                    'bg-yellow-500 hover:bg-yellow-600 text-white'
                   }
                 >
                   {currentParticipant.isReady ? 'Not Ready' : 'Ready Up'}
@@ -416,7 +416,7 @@ export default function GameLobbyPage() {
                     <Button
                       onClick={startGame}
                       disabled={!allReady || gameSession.status !== 'ready'}
-                      className="bg-amber-600 hover:bg-amber-700 text-white disabled:opacity-50"
+                      className="bg-yellow-500 hover:bg-yellow-600 text-white disabled:opacity-50"
                     >
                       Start Game
                     </Button>

@@ -945,9 +945,6 @@ export default function GroupInfoPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <Badge variant="secondary" className="mb-2">
-                      Top {index + 1}
-                    </Badge>
                     {meal.foods && meal.foods.length > 0 && (
                       <div className="text-xs text-muted-foreground">
                         {meal.foods.slice(0, 3).map((food) => food.name).join(', ')}

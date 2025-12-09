@@ -88,15 +88,15 @@ export function GameHistorySection({ groupId, className = '', onRefresh }: GameH
 
   if (loading) {
     return (
-      <Card className={`bg-gradient-to-br from-amber-800/30 to-amber-900/30 border-amber-700/50 ${className}`}>
+      <Card className={`bg-gradient-to-br from-yellow-800/30 to-yellow-900/30 border-yellow-700/50 ${className}`}>
         <CardHeader>
-          <CardTitle className="flex items-center text-amber-200">
+          <CardTitle className="flex items-center text-yellow-400">
             <Gamepad2 className="w-5 h-5 mr-2" /> Game History
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-500"></div>
           </div>
         </CardContent>
       </Card>
@@ -105,9 +105,9 @@ export function GameHistorySection({ groupId, className = '', onRefresh }: GameH
 
   if (error) {
     return (
-      <Card className={`bg-gradient-to-br from-amber-800/30 to-amber-900/30 border-amber-700/50 ${className}`}>
+      <Card className={`bg-gradient-to-br from-yellow-800/30 to-yellow-900/30 border-yellow-700/50 ${className}`}>
         <CardHeader>
-          <CardTitle className="flex items-center text-amber-200">
+          <CardTitle className="flex items-center text-yellow-400">
             <Gamepad2 className="w-5 h-5 mr-2" /> Game History
           </CardTitle>
         </CardHeader>
@@ -130,9 +130,9 @@ export function GameHistorySection({ groupId, className = '', onRefresh }: GameH
 
   return (
     <>
-      <Card className={`bg-gradient-to-br from-amber-800/30 to-amber-900/30 border-amber-700/50 ${className}`}>
+      <Card className={`bg-gradient-to-br from-yellow-800/30 to-yellow-900/30 border-yellow-700/50 ${className}`}>
         <CardHeader>
-          <CardTitle className="flex items-center text-amber-200">
+          <CardTitle className="flex items-center text-yellow-400">
             <Gamepad2 className="w-5 h-5 mr-2" /> Game History
           </CardTitle>
         </CardHeader>
@@ -149,14 +149,14 @@ export function GameHistorySection({ groupId, className = '', onRefresh }: GameH
                   return (
                     <div
                       key={session.sessionId}
-                      className="border border-amber-700/30 rounded-lg p-4 bg-neutral-800/50 hover:bg-neutral-800/70 transition-all cursor-pointer"
+                      className="border border-yellow-700/30 rounded-lg p-4 bg-neutral-800/50 hover:bg-neutral-800/70 transition-all cursor-pointer"
                       onClick={() => handleViewDetails(session.sessionId)}
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
                           {/* Game type indicator with icon */}
                           <div className="flex items-center gap-2 mb-2">
-                            <GameIcon className={`h-4 w-4 ${isClicker ? 'text-amber-400' : isRoulette ? 'text-purple-400' : 'text-blue-400'}`} />
+                            <GameIcon className={`h-4 w-4 ${isClicker ? 'text-yellow-400' : isRoulette ? 'text-orange-400' : 'text-blue-400'}`} />
                             <span className="text-xs font-medium text-neutral-400 uppercase">
                               {isClicker ? 'Egg Clicker' : isRoulette ? 'Roulette' : session.gameType}
                             </span>
@@ -186,7 +186,7 @@ export function GameHistorySection({ groupId, className = '', onRefresh }: GameH
                             {isClicker && (
                               <div className="flex items-center gap-1">
                                 <Egg className="h-3 w-3" />
-                                <span className="text-amber-400 font-medium">
+                                <span className="text-yellow-400 font-medium">
                                   {session.winner.clickCount} clicks by {session.winner.username}
                                 </span>
                               </div>
@@ -194,7 +194,7 @@ export function GameHistorySection({ groupId, className = '', onRefresh }: GameH
                             {isRoulette && (
                               <div className="flex items-center gap-1">
                                 <CircleDot className="h-3 w-3" />
-                                <span className="text-purple-400 font-medium">
+                                <span className="text-orange-400 font-medium">
                                   Won by {session.winner.username}
                                 </span>
                               </div>
@@ -206,7 +206,7 @@ export function GameHistorySection({ groupId, className = '', onRefresh }: GameH
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="text-amber-400 hover:text-amber-300 hover:bg-amber-900/20"
+                          className="text-yellow-400 hover:text-yellow-300 hover:bg-yellow-900/20"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleViewDetails(session.sessionId);
@@ -225,7 +225,7 @@ export function GameHistorySection({ groupId, className = '', onRefresh }: GameH
               {hasMore && (
                 <Button
                   variant="outline"
-                  className="w-full border-amber-600 text-amber-400 hover:bg-amber-900/30"
+                  className="w-full border-yellow-600 text-yellow-400 hover:bg-yellow-900/30"
                   onClick={handleLoadMore}
                 >
                   Load More
@@ -234,7 +234,7 @@ export function GameHistorySection({ groupId, className = '', onRefresh }: GameH
             </div>
           ) : (
             <div className="text-center py-8 text-gray-400">
-              <Gamepad2 className="h-12 w-12 mx-auto mb-3 text-amber-600 opacity-50" />
+              <Gamepad2 className="h-12 w-12 mx-auto mb-3 text-yellow-600 opacity-50" />
               <p>No games played yet</p>
               <p className="text-sm mt-1">Start a game to see history here</p>
             </div>

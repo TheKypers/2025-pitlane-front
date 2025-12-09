@@ -163,6 +163,13 @@ export default function GroupDetailPage() {
           </Button>
           <Button 
             variant="outline" 
+            onClick={() => router.push(`/protected/groups/${groupId}/manual-meal`)} 
+            className="w-full sm:w-auto border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
+          >
+            <Utensils className="w-4 h-4 mr-2" /> Register Meal
+          </Button>
+          <Button 
+            variant="outline" 
             onClick={() => router.push(`/protected/groups/${groupId}/voting`)} 
             className="w-full sm:w-auto border-amber-600 text-amber-600 hover:bg-amber-600 hover:text-white"
           >
@@ -171,16 +178,9 @@ export default function GroupDetailPage() {
           <Button 
             variant="outline" 
             onClick={() => router.push(`/protected/groups/${groupId}/game`)} 
-            className="w-full sm:w-auto border-green-600 text-green-600 hover:bg-green-600 hover:text-white"
+            className="w-full sm:w-auto border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-white"
           >
             <ChefHat className="w-4 h-4 mr-2" /> Group Game
-          </Button>
-          <Button 
-            variant="outline" 
-            onClick={() => router.push(`/protected/groups/${groupId}/manual-meal`)} 
-            className="w-full sm:w-auto border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white"
-          >
-            <Utensils className="w-4 h-4 mr-2" /> Register Meal
           </Button>
         </div>
       </div>

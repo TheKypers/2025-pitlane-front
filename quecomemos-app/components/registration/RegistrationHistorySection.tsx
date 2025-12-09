@@ -110,15 +110,15 @@ export function RegistrationHistorySection({ groupId, className = '', onRefresh 
 
   if (loading) {
     return (
-      <Card className={`bg-gradient-to-br from-amber-800/30 to-amber-900/30 border-amber-700/50 ${className}`}>
+      <Card className={`bg-gradient-to-br from-orange-800/30 to-orange-900/30 border-orange-700/50 ${className}`}>
         <CardHeader>
-          <CardTitle className="flex items-center text-amber-200">
+          <CardTitle className="flex items-center text-orange-400">
             <Utensils className="w-5 h-5 mr-2" /> Registration History
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
           </div>
         </CardContent>
       </Card>
@@ -127,9 +127,9 @@ export function RegistrationHistorySection({ groupId, className = '', onRefresh 
 
   if (error) {
     return (
-      <Card className={`bg-gradient-to-br from-amber-800/30 to-amber-900/30 border-amber-700/50 ${className}`}>
+      <Card className={`bg-gradient-to-br from-orange-800/30 to-orange-900/30 border-orange-700/50 ${className}`}>
         <CardHeader>
-          <CardTitle className="flex items-center text-amber-200">
+          <CardTitle className="flex items-center text-orange-400">
             <Utensils className="w-5 h-5 mr-2" /> Registration History
           </CardTitle>
         </CardHeader>
@@ -152,9 +152,9 @@ export function RegistrationHistorySection({ groupId, className = '', onRefresh 
 
   return (
     <>
-      <Card className={`bg-gradient-to-br from-amber-800/30 to-amber-900/30 border-amber-700/50 ${className}`}>
+      <Card className={`bg-gradient-to-br from-orange-800/30 to-orange-900/30 border-orange-700/50 ${className}`}>
         <CardHeader>
-          <CardTitle className="flex items-center text-amber-200">
+          <CardTitle className="flex items-center text-orange-400">
             <Utensils className="w-5 h-5 mr-2" /> Registration History
           </CardTitle>
         </CardHeader>
@@ -167,18 +167,18 @@ export function RegistrationHistorySection({ groupId, className = '', onRefresh 
                   return (
                     <div
                       key={consumption.MealConsumptionID}
-                      className="border border-amber-700/30 rounded-lg p-4 bg-neutral-800/50 hover:bg-neutral-800/70 transition-all cursor-pointer"
+                      className="border border-orange-700/30 rounded-lg p-4 bg-neutral-800/50 hover:bg-neutral-800/70 transition-all cursor-pointer"
                       onClick={() => handleViewDetails(consumption.MealConsumptionID)}
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
                           {/* Meal name */}
                           <div className="flex items-center gap-2 mb-2">
-                            <Utensils className="h-4 w-4 text-amber-400" />
+                            <Utensils className="h-4 w-4 text-orange-400" />
                             <h3 className="font-semibold text-neutral-100">
                               {consumption.meal.name}
                             </h3>
-                            <Badge variant="outline" className="text-xs border-amber-600 text-amber-400">
+                            <Badge variant="outline" className="text-xs border-orange-600 text-orange-400">
                               Group Meal
                             </Badge>
                           </div>
@@ -207,7 +207,7 @@ export function RegistrationHistorySection({ groupId, className = '', onRefresh 
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="text-amber-400 hover:text-amber-300 hover:bg-amber-900/20"
+                          className="text-orange-400 hover:text-orange-300 hover:bg-orange-900/20"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleViewDetails(consumption.MealConsumptionID);
@@ -226,7 +226,7 @@ export function RegistrationHistorySection({ groupId, className = '', onRefresh 
               {hasMore && (
                 <Button
                   variant="outline"
-                  className="w-full border-amber-600 text-amber-400 hover:bg-amber-900/30"
+                  className="w-full border-orange-600 text-orange-400 hover:bg-orange-900/30"
                   onClick={handleLoadMore}
                 >
                   Load More
@@ -235,7 +235,7 @@ export function RegistrationHistorySection({ groupId, className = '', onRefresh 
             </div>
           ) : (
             <div className="text-center py-8 text-gray-400">
-              <Utensils className="h-12 w-12 mx-auto mb-3 text-amber-600 opacity-50" />
+              <Utensils className="h-12 w-12 mx-auto mb-3 text-orange-600 opacity-50" />
               <p>No group meals registered yet</p>
               <p className="text-sm mt-1">Register a meal to see history here</p>
             </div>

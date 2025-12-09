@@ -6,6 +6,7 @@ interface UserProfile {
   email: string;
   username?: string;
   role: string;
+  calorie_goal?: number | null;
 }
 
 export async function getUserProfile(): Promise<UserProfile | null> {

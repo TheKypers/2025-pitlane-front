@@ -252,7 +252,7 @@ export function GameHistorySection({ groupId, className = '', onRefresh }: GameH
           }}
           sessionId={selectedSessionId}
           sessionType="game"
-          onPortionRegistered={loadHistory}
+          onPortionRegistered={() => loadHistory(limit)}
         />
       )}
     </>

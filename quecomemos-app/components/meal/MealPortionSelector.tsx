@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Plus, Minus } from 'lucide-react';
 import Image from 'next/image';
 import { CalorieSemaphore } from '@/components/alerts';
-import { useUser } from '@/lib/contexts/UserContext';
 import { useCalorieProgress } from '@/lib/hooks/useKcalProgress';
 
 interface MealFood {
@@ -48,8 +47,6 @@ export function MealPortionSelector({
   onCancel,
   loading = false
 }: MealPortionSelectorProps) {
-  const { userData } = useUser();
-  const profile = userData?.profile;
   const { progress } = useCalorieProgress();
   
   console.log('[MealPortionSelector] Initialized with meal:', {

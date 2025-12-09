@@ -7,6 +7,7 @@ interface UserProfile {
   email: string;
   username?: string;
   role: string;
+  calorie_goal?: number | null;
 }
 
 interface UseUserProfileReturn {

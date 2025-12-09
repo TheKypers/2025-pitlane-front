@@ -20,6 +20,8 @@ import { BadgeProgressDisplay } from '@/components/profile/badges/BadgeProgressD
 import { useUserBadges } from '@/lib/hooks/useUserBadges';
 import { PrimaryBadgeDisplay } from '@/components/profile/badges/PrimaryBadgeDisplay';
 import { BadgeSelectionModal } from '@/components/profile/badges/BadgeSelectionModal';
+import { ConsumptionHistoryItem } from '@/components/history/ConsumptionHistoryItem';
+import { SemaphoreSummary } from '@/components/dashboard/SemaphoreSummary';
 
 import { createClient } from '@/lib/supabase/client';
 
@@ -579,9 +581,28 @@ export default function UserHistoryPage() {
                               </div>
                             )}
                             {consumption.totalKcal !== undefined && (
-                              <p className="text-xs text-muted-foreground mt-1 ml-6">
-                                {consumption.totalKcal} kcal
-                              </p>
+                              <div className="flex items-center gap-2 mt-1 ml-6">
+                                <p className="text-xs text-muted-foreground">
+                                  {consumption.totalKcal} kcal
+                                </p>
+                                {(() => {
+                                  const dailyGoal = progress?.goal || 2000;
+                                  const mealThreshold = dailyGoal / 3;
+                                  const redThreshold = (dailyGoal * 4) / 3;
+                                  let status: 'green' | 'yellow' | 'red' = 'yellow';
+                                  
+                                  if (consumption.totalKcal <= mealThreshold) status = 'green';
+                                  else if (consumption.totalKcal > redThreshold) status = 'red';
+                                  
+                                  return (
+                                    <div className={`w-2 h-2 rounded-full ${
+                                      status === 'green' ? 'bg-green-500' :
+                                      status === 'yellow' ? 'bg-yellow-500' :
+                                      'bg-red-500'
+                                    }`} title={`Calorie level: ${status}`} />
+                                  );
+                                })()}
+                              </div>
                             )}
                             <div className="flex items-center gap-4 mt-2 ml-6 text-xs text-muted-foreground">
                               <span>
@@ -681,6 +702,9 @@ export default function UserHistoryPage() {
               onUpdate={updateCalorieGoal}
             />
           </div>
+          
+          {/* Semaphore Summary */}
+          <SemaphoreSummary />
         </TabsContent>
 
         {/* Tab: Badges */}

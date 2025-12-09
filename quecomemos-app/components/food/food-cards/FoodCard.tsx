@@ -5,6 +5,17 @@ import { Utensils, Heart, Eye, SquarePen, Hexagon } from 'lucide-react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { useKorvenCheck } from '@/components/meal/hooks/useKorvenCheck';
+import { DietaryBadge } from '@/components/alerts';
+
+interface DietaryAlert {
+  hasConflict: boolean;
+  isFit?: boolean;
+  message?: string;
+  conflicts?: Array<{
+    id: number;
+    name: string;
+  }>;
+}
 
 interface Food {
   FoodID: number;
@@ -14,6 +25,7 @@ interface Food {
   profileId?: string;
   dietaryRestrictions?: { name?: string; DietaryRestrictionID?: number }[] | number[];
   preferences?: { name?: string; PreferenceID?: number }[] | number[];
+  dietaryAlert?: DietaryAlert;
   [key: string]: unknown;
 }
 
@@ -27,6 +39,7 @@ interface FoodCardProps {
   preferenceNames?: { [key: number]: string };
   restrictionNames?: { [key: number]: string };
   className?: string;
+  showAlert?: boolean; // Show dietary alert badge
 }
 
 export function FoodCard({ 
@@ -38,7 +51,8 @@ export function FoodCard({
   showPreferenceBadge = false,
   preferenceNames = {},
   restrictionNames = {},
-  className
+  className,
+  showAlert = false
 }: FoodCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -100,17 +114,26 @@ export function FoodCard({
 
           {/* Content Section */}
           <div className="p-3 space-y-2 flex-1 flex flex-col">
-            {/* Title */}
+            {/* Title and Korven badge */}
             <div className="space-y-1">
               <h3 className="text-sm font-semibold text-amber-200 transition-colors line-clamp-2 leading-tight">
                 {food.name}
               </h3>
-              {isKorven && (
-                <span className="text-xs bg-amber-600/50 text-amber-100 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
-                  <Hexagon className="w-3 h-3 fill-amber-400/30" />
-                  Korven
-                </span>
-              )}
+              <div className="flex flex-wrap gap-1 items-center">
+                {isKorven && (
+                  <span className="text-xs bg-amber-600/50 text-amber-100 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                    <Hexagon className="w-3 h-3 fill-amber-400/30" />
+                    Korven
+                  </span>
+                )}
+                {/* Dietary Alert Badge */}
+                {showAlert && food.dietaryAlert && (
+                  <DietaryBadge 
+                    isFit={food.dietaryAlert.isFit || !food.dietaryAlert.hasConflict} 
+                    compact 
+                  />
+                )}
+              </div>
             </div>
 
             {/* Calories */}

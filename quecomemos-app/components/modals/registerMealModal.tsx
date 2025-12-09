@@ -10,6 +10,8 @@ import { MealComposition } from '../meal/MealComposition';
 import { MealPortionSelector, type PortionData } from '../meal';
 import { fetchGroupDietaryInfo } from '@/lib/utils/groupService';
 import { Group } from '../groups/index';
+import { DietaryAlert, CalorieSemaphore } from '@/components/alerts';
+import { useMealWithAlerts } from '@/lib/hooks/useMealWithAlerts';
 
 interface GroupDietaryInfo {
   dietaryRestrictions: Array<{
@@ -58,11 +60,17 @@ export function RegisterMealModal({ isOpen, onClose, onSubmit, group }: Register
   const [portionMode, setPortionMode] = useState<'full' | 'partial'>('full');
   const [showPortionSelector, setShowPortionSelector] = useState(false);
   const [selectedPortions, setSelectedPortions] = useState<PortionData | null>(null);
+  
+  // Ignore dietary restrictions state
+  const [ignoreDietaryWarnings, setIgnoreDietaryWarnings] = useState(false);
 
   const profile = userData?.profile;
   const userRestrictions = userData?.preferences?.dietaryRestrictions || [];
   const groupRestrictions = groupDietaryInfo?.dietaryRestrictions?.map(r => r.DietaryRestrictionID) || [];
   const isGroupMode = !!group;
+
+  // Fetch meal details with alerts when meal is selected
+  const { meal: mealWithAlerts } = useMealWithAlerts(selectedMeal?.MealID || 0);
 
   // Fetch group dietary info when group is provided
   useEffect(() => {
@@ -134,6 +142,7 @@ export function RegisterMealModal({ isOpen, onClose, onSubmit, group }: Register
     setPortionMode('full');
     setShowPortionSelector(false);
     setSelectedPortions(null);
+    setIgnoreDietaryWarnings(false);
     onClose();
   }, [onClose]);
 
@@ -273,7 +282,78 @@ export function RegisterMealModal({ isOpen, onClose, onSubmit, group }: Register
 
                 {/* Selected Meal Composition */}
                 {selectedMeal && (
-                  <MealComposition meal={selectedMeal} />
+                  <div className="space-y-3">
+                    <MealComposition meal={selectedMeal} />
+                    
+                    {/* Dietary and Calorie Alerts */}
+                    {mealWithAlerts && (
+                      <div className="space-y-3 p-3 bg-neutral-800/50 rounded-lg border border-neutral-700">
+                        {/* Dietary Alert */}
+                        {mealWithAlerts.dietaryFitness && (
+                          <div className="space-y-2">
+                            <DietaryAlert 
+                              isFit={mealWithAlerts.dietaryFitness.isFit}
+                              conflicts={mealWithAlerts.dietaryFitness.conflicts}
+                              size="md"
+                            />
+                            
+                            {/* Ignore Dietary Warnings Button */}
+                            {!mealWithAlerts.dietaryFitness.isFit && (
+                              <button
+                                type="button"
+                                onClick={() => setIgnoreDietaryWarnings(!ignoreDietaryWarnings)}
+                                className={`w-full px-3 py-2 text-sm font-medium rounded-lg border-2 transition-all ${
+                                  ignoreDietaryWarnings
+                                    ? 'bg-orange-600 border-orange-500 text-white hover:bg-orange-700'
+                                    : 'bg-neutral-700 border-neutral-600 text-gray-300 hover:bg-neutral-600'
+                                }`}
+                              >
+                                {ignoreDietaryWarnings
+                                  ? '⚠️ Ignoring dietary warnings - Click to re-enable'
+                                  : '🔓 Ignore dietary restrictions for this meal'}
+                              </button>
+                            )}
+                          </div>
+                        )}
+                        
+                        {/* Calorie Semaphore with Portion Consideration */}
+                        {mealWithAlerts.totalKcal !== undefined && profile?.calorie_goal && (
+                          <div className="space-y-2">
+                            <p className="text-xs text-gray-400 font-medium">Nutritional Impact:</p>
+                            <CalorieSemaphore 
+                              status={
+                                (() => {
+                                  const portionFraction = portionMode === 'partial' && selectedPortions 
+                                    ? selectedPortions.portionFraction 
+                                    : 1;
+                                  const adjustedCalories = mealWithAlerts.totalKcal * portionFraction;
+                                  const dailyGoal = profile.calorie_goal || 2000;
+                                  const mealThreshold = dailyGoal / 3;
+                                  const redThreshold = (dailyGoal * 4) / 3;
+                                  
+                                  if (adjustedCalories <= mealThreshold) return 'green';
+                                  if (adjustedCalories > redThreshold) return 'red';
+                                  return 'yellow';
+                                })()
+                              }
+                              calories={Math.round(
+                                mealWithAlerts.totalKcal * 
+                                (portionMode === 'partial' && selectedPortions 
+                                  ? selectedPortions.portionFraction 
+                                  : 1)
+                              )}
+                              size="md"
+                            />
+                            {portionMode === 'partial' && selectedPortions && (
+                              <p className="text-xs text-gray-400">
+                                Based on {(selectedPortions.portionFraction * 100).toFixed(0)}% portion
+                              </p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 )}
 
                 {/* Portion Selection Option */}
@@ -394,7 +474,7 @@ export function RegisterMealModal({ isOpen, onClose, onSubmit, group }: Register
                     <button
                       type="button"
                       onClick={handleRegisterNow}
-                      disabled={!selectedMeal || isSubmitting}
+                      disabled={!selectedMeal || isSubmitting || (!ignoreDietaryWarnings && mealWithAlerts?.dietaryFitness && !mealWithAlerts.dietaryFitness.isFit)}
                       className="p-4 bg-amber-600 hover:bg-amber-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-medium border-2 border-transparent hover:border-amber-500 disabled:border-gray-500"
                     >
                       <div className="text-center">
@@ -415,7 +495,7 @@ export function RegisterMealModal({ isOpen, onClose, onSubmit, group }: Register
                     <button
                       type="button"
                       onClick={handleChooseDateTime}
-                      disabled={!selectedMeal || isSubmitting}
+                      disabled={!selectedMeal || isSubmitting || (!ignoreDietaryWarnings && mealWithAlerts?.dietaryFitness && !mealWithAlerts.dietaryFitness.isFit)}
                       className="p-4 bg-neutral-700 hover:bg-neutral-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-medium border-2 border-transparent hover:border-neutral-500 disabled:border-gray-500"
                     >
                       <div className="text-center">
@@ -427,11 +507,15 @@ export function RegisterMealModal({ isOpen, onClose, onSubmit, group }: Register
                     </button>
                   </div>
 
-                  {!selectedMeal && (
+                  {!selectedMeal ? (
                     <p className="text-sm text-gray-400 text-center">
                       Please select a meal first
                     </p>
-                  )}
+                  ) : (!ignoreDietaryWarnings && mealWithAlerts?.dietaryFitness && !mealWithAlerts.dietaryFitness.isFit) ? (
+                    <p className="text-sm text-orange-400 text-center font-medium">
+                      ⚠️ Dietary conflicts detected. Click &quot;Ignore dietary restrictions&quot; above to proceed.
+                    </p>
+                  ) : null}
                 </div>
               ) : (
                 /* Date/Time Selection Form */
@@ -498,11 +582,18 @@ export function RegisterMealModal({ isOpen, onClose, onSubmit, group }: Register
                   {/* Submit Button */}
                   <button
                     type="submit"
-                    disabled={isSubmitting || !selectedMeal || (!useCurrentTime && (!mealDate || !mealTime))}
+                    disabled={isSubmitting || !selectedMeal || (!useCurrentTime && (!mealDate || !mealTime)) || (!ignoreDietaryWarnings && mealWithAlerts?.dietaryFitness && !mealWithAlerts.dietaryFitness.isFit)}
                     className="w-full py-3 bg-amber-600 hover:bg-amber-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-medium"
                   >
                     {isSubmitting ? 'Registering...' : 'Register Meal'}
                   </button>
+                  
+                  {/* Dietary warning reminder in date/time section */}
+                  {!ignoreDietaryWarnings && mealWithAlerts?.dietaryFitness && !mealWithAlerts.dietaryFitness.isFit && (
+                    <p className="text-xs text-orange-400 text-center font-medium">
+                      ⚠️ Dietary conflicts detected. Return to meal selection and enable "Ignore dietary restrictions" to proceed.
+                    </p>
+                  )}
                 </div>
               )}
             </form>

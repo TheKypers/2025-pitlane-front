@@ -54,6 +54,7 @@ export function MealSearchBar({
   const [showFilters, setShowFilters] = useState(false);
   const [allPreferences, setAllPreferences] = useState<Preference[]>([]);
   const [allRestrictions, setAllRestrictions] = useState<DietaryRestriction[]>([]);
+  const [applyDietaryFilter, setApplyDietaryFilter] = useState(true); // Toggle for dietary filtering
 
   const [filters, setFilters] = useState<SearchFilters>({
     searchTerm: '',
@@ -88,19 +89,25 @@ export function MealSearchBar({
   }, []);
 
   // Check if meal is compatible with restrictions
+  // Dietary restrictions on food indicate COMPLIANCE (e.g., "vegan" means it IS vegan)
+  // A meal is compatible only if ALL its foods have ALL the user's required restrictions
   const isMealCompatible = React.useCallback((meal: Meal) => {
     const restrictions = isGroupMode ? groupRestrictions : userRestrictions;
     
     if (restrictions.length === 0) return true;
 
-    // Check if all foods in the meal are compatible with restrictions
+    // Check if all foods in the meal are compatible with ALL user restrictions
     return meal.mealFoods.every(mf => {
       const foodRestrictionsIds = mf.food.dietaryRestrictions?.map(r => 
         typeof r === 'number' ? r : r.DietaryRestrictionID || 0
       ) || [];
       
-      // Food is compatible if it has "For Everyone" (0) or matches user's restrictions
-      return foodRestrictionsIds.includes(0) || restrictions.some(restId => foodRestrictionsIds.includes(restId));
+      // Check for "For Everyone" (0) - this food is safe for everyone
+      if (foodRestrictionsIds.includes(0)) return true;
+      
+      // Food must have ALL of the user's required restrictions to be compatible
+      // For example: User needs "vegan" - food must be marked as vegan
+      return restrictions.every(userRestId => foodRestrictionsIds.includes(userRestId));
     });
   }, [isGroupMode, groupRestrictions, userRestrictions]);
 
@@ -110,8 +117,10 @@ export function MealSearchBar({
 
     let filtered = allMeals.slice();
 
-    // Apply dietary restriction filtering first
-    filtered = filtered.filter(isMealCompatible);
+    // Apply dietary restriction filtering only if toggle is enabled
+    if (applyDietaryFilter) {
+      filtered = filtered.filter(isMealCompatible);
+    }
 
     // Apply search term filter
     if (query.trim()) {
@@ -182,7 +191,7 @@ export function MealSearchBar({
     }
 
     return filtered.slice(0, maxResults);
-  }, [allMeals, query, filters, showAdvancedFilters, maxResults, isMealCompatible, calculateTotalCalories]);
+  }, [allMeals, query, filters, showAdvancedFilters, maxResults, isMealCompatible, calculateTotalCalories, applyDietaryFilter]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -349,14 +358,29 @@ export function MealSearchBar({
 
       {/* Restriction Info */}
       {(userRestrictions.length > 0 || groupRestrictions.length > 0) && (
-        <div className="mt-2 p-2 bg-blue-900/20 border border-blue-700/50 rounded text-xs text-blue-200 flex items-center gap-2">
-          <Info className="w-4 h-4" />
-          <span>
-            {isGroupMode 
-              ? `Showing meals compatible with ${groupRestrictions.length} group restriction(s)`
-              : `Showing meals compatible with your ${userRestrictions.length} dietary restriction(s)`
-            }
-          </span>
+        <div className="mt-2 space-y-2">
+          <div className="p-2 bg-blue-900/20 border border-blue-700/50 rounded text-xs text-blue-200 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <Info className="w-4 h-4" />
+              <span>
+                {isGroupMode 
+                  ? `${applyDietaryFilter ? 'Filtering by' : 'Not filtering by'} ${groupRestrictions.length} group restriction(s)`
+                  : `${applyDietaryFilter ? 'Filtering by' : 'Not filtering by'} your ${userRestrictions.length} dietary restriction(s)`
+                }
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setApplyDietaryFilter(!applyDietaryFilter)}
+              className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
+                applyDietaryFilter
+                  ? 'bg-blue-600 text-white hover:bg-blue-700'
+                  : 'bg-orange-600 text-white hover:bg-orange-700'
+              }`}
+            >
+              {applyDietaryFilter ? '🔒 Filter Active' : '🔓 Show All'}
+            </button>
+          </div>
         </div>
       )}
 

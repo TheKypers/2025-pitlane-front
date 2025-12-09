@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { ChefHat, Clock, User, Users, Hexagon } from "lucide-react";
 import { DEFAULTS } from "./constants";
 import { useKorvenCheck } from "./hooks/useKorvenCheck";
+import { DietaryBadge, CalorieSemaphore, type SemaphoreStatus } from "@/components/alerts";
 
 interface MealFood {
   food: {
@@ -13,6 +14,17 @@ interface MealFood {
     kCal: number;
   };
   quantity: number;
+}
+
+interface DietaryFitness {
+  isFit: boolean;
+  conflicts?: Array<{
+    foodName: string;
+    conflicts: Array<{
+      id: number;
+      name: string;
+    }>;
+  }>;
 }
 
 interface Meal {
@@ -30,14 +42,18 @@ interface Meal {
     role: string;
   };
   mealFoods: MealFood[];
+  dietaryFitness?: DietaryFitness;
+  calorieStatus?: SemaphoreStatus;
+  totalKcal?: number;
 }
 
 interface MealCardProps {
   meal: Meal;
   onClick?: (meal: Meal) => void;
-  showExtendedInfo?: boolean; // Controls whether to show prep time, servings, etc.
-  maxFoodsToShow?: number; // How many foods to show before "X more"
+  showExtendedInfo?: boolean;
+  maxFoodsToShow?: number;
   className?: string;
+  showAlerts?: boolean; // Show dietary and calorie alerts
 }
 
 export function MealCard({ 
@@ -45,7 +61,8 @@ export function MealCard({
   onClick, 
   showExtendedInfo = true,
   maxFoodsToShow = DEFAULTS.MAX_FOODS_TO_SHOW,
-  className = ""
+  className = "",
+  showAlerts = false
 }: MealCardProps) {
   const { isKorvenInspiredMeal } = useKorvenCheck();
   const isKorven = isKorvenInspiredMeal(meal.name);
@@ -60,6 +77,10 @@ export function MealCard({
   const foodsToShow = meal.mealFoods?.slice(0, maxFoodsToShow) || [];
   const remainingFoods = Math.max(0, totalFoods - maxFoodsToShow);
 
+  // Calculate total calories if not provided
+  const totalKcal = meal.totalKcal || (meal.mealFoods?.reduce((sum, mf) => 
+    sum + (mf.food.kCal * mf.quantity), 0) || 0);
+
   return (
     <Card
       className={`bg-amber-800/30 border-amber-700/50 hover:bg-amber-700/40 transition-colors ${
@@ -70,7 +91,7 @@ export function MealCard({
       <div className="p-4">
         {/* Header */}
         <div className="flex items-start justify-between mb-2">
-          <div className="flex-1 flex items-center gap-2">
+          <div className="flex-1 flex items-center gap-2 flex-wrap">
             <h3 className="font-semibold text-amber-200 mb-1 line-clamp-1">
               {meal.name}
             </h3>
@@ -86,6 +107,22 @@ export function MealCard({
             <span className="capitalize">{meal.profile.role}</span>
           </div>
         </div>
+        
+        {/* Alerts Section */}
+        {showAlerts && (meal.dietaryFitness || meal.calorieStatus) && (
+          <div className="mb-3 flex flex-wrap gap-2">
+            {meal.dietaryFitness && (
+              <DietaryBadge isFit={meal.dietaryFitness.isFit} compact />
+            )}
+            {meal.calorieStatus && (
+              <CalorieSemaphore 
+                status={meal.calorieStatus} 
+                calories={totalKcal}
+                size="sm"
+              />
+            )}
+          </div>
+        )}
         
         {/* Description */}
         {meal.description && (

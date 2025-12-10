@@ -1,7 +1,5 @@
-import { AuthButton } from "@/components/auth-button";
-import { Logo } from "@/components/logo";
-import { FoodsProvider } from "@/lib/contexts/FoodsContext";
-import { UserProvider } from "@/lib/contexts/UserContext";
+import { AuthButton } from "@/components/auth";
+import { Logo } from "@/components/common";
 
 export default function ProtectedLayout({
   children,
@@ -9,24 +7,23 @@ export default function ProtectedLayout({
   children: React.ReactNode;
 }) {
   return (
-    <UserProvider>
-      <FoodsProvider>
-        <main className="min-h-screen flex flex-col items-center">
-          <div className="flex-1 w-full flex flex-col gap-20 items-center">
-            <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-              <div className="w-full max-w-5xl flex justify-between items-center p-3 px-3 md:px-5 text-sm">
-                <div className="flex gap-5 items-center font-semibold">
-                  <Logo />
+      <main className="min-h-screen flex flex-col items-center bg-gradient-to-br from-background to-muted/10">
+        <div className="flex-1 w-full flex flex-col gap-1 items-center">
+          <nav className="w-full flex justify-center border-b border-b-foreground/10 h-28 bg-background sticky top-0 z-50">
+            <div className="w-full max-w-7xl flex justify-between items-center p-6 px-8 md:px-10 text-sm">
+              <div className="flex gap-6 items-center font-semibold">
+                <Logo size="xl" />
+                <div className="hidden md:block">
                 </div>
-                <AuthButton />
               </div>
-            </nav>
-            <div className="flex-1 flex flex-col gap-20 w-full max-w-5xl p-3 md:p-5">
-              {children}
+              <div className="w-24"></div>
+              <AuthButton />
             </div>
+          </nav>
+          <div className="flex-1 flex flex-col gap-16 w-full max-w-6xl p-4 md:p-6">
+            {children}
           </div>
-        </main>
-      </FoodsProvider>
-    </UserProvider>
+        </div>
+      </main>
   );
 }

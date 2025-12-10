@@ -1,8 +1,36 @@
-import { updateSession } from "@/lib/supabase/middleware";
-import { type NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  return await updateSession(request);
+  // Get the access token from cookies
+  const accessToken = request.cookies.get('sb-access-token')?.value || 
+                     request.cookies.get('supabase-auth-token')?.value;
+  
+  // Check for any supabase session cookies
+  const hasSupabaseSession = Array.from(request.cookies.getAll()).some(cookie => 
+    cookie.name.includes('supabase') || cookie.name.includes('sb-')
+  );
+
+  const { pathname } = request.nextUrl;
+  
+  // Allow access to auth pages and public routes
+  if (
+    pathname === "/" ||
+    pathname.startsWith("/auth") ||
+    pathname.startsWith("/_next") ||
+    pathname.includes("favicon") ||
+    pathname.match(/\.(svg|png|jpg|jpeg|gif|webp)$/)
+  ) {
+    return NextResponse.next();
+  }
+
+  // If no session detected and trying to access protected routes, redirect to login
+  if (!hasSupabaseSession && !accessToken) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/auth/login";
+    return NextResponse.redirect(url);
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {

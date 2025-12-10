@@ -3,8 +3,8 @@
 import { useUser } from '@/lib/contexts/UserContext';
 
 interface UserPreferences {
-  preferences: any[];
-  dietaryRestrictions: any[];
+  preferences: number[];
+  dietaryRestrictions: number[];
   hasPreferences: boolean;
 }
 
@@ -12,7 +12,6 @@ interface UseUserPreferencesReturn {
   userPreferences: UserPreferences | null;
   loading: boolean;
   error: string | null;
-  refetch: () => Promise<void>;
 }
 
 /**
@@ -20,12 +19,12 @@ interface UseUserPreferencesReturn {
  * Se mantiene para compatibilidad con componentes existentes.
  */
 export function useUserPreferences(): UseUserPreferencesReturn {
-  const { userData, loading, error, refetch } = useUser();
+  const { userData, loading, error,  } = useUser();
 
   return {
     userPreferences: userData.preferences,
     loading,
     error,
-    refetch,
+
   };
 }

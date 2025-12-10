@@ -7,26 +7,20 @@ interface UserProfile {
   email: string;
   username?: string;
   role: string;
+  calorie_goal?: number | null;
 }
 
 interface UseUserProfileReturn {
   profile: UserProfile | null;
   loading: boolean;
   error: string | null;
-  refetch: () => Promise<void>;
 }
-
-/**
- * Hook de compatibilidad que usa el UserContext.
- * Se mantiene para compatibilidad con componentes existentes.
- */
 export function useUserProfile(): UseUserProfileReturn {
-  const { userData, loading, error, refetch } = useUser();
+  const { userData, loading, error } = useUser();
 
   return {
     profile: userData.profile,
     loading,
     error,
-    refetch,
   };
 }

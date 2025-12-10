@@ -20,7 +20,6 @@ import { BadgeProgressDisplay } from '@/components/profile/badges/BadgeProgressD
 import { useUserBadges } from '@/lib/hooks/useUserBadges';
 import { PrimaryBadgeDisplay } from '@/components/profile/badges/PrimaryBadgeDisplay';
 import { BadgeSelectionModal } from '@/components/profile/badges/BadgeSelectionModal';
-import { SemaphoreSummary } from '@/components/dashboard/SemaphoreSummary';
 import { ConsumptionPointsGraph } from '@/components/dashboard/ConsumptionPointsGraph';
 import { HistoryPageProvider, useHistoryPageContext } from '@/lib/contexts/HistoryPageContext';
 

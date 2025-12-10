@@ -12,21 +12,36 @@ export function UserProfileSection() {
 
   if (loading) {
     return (
-      <div className="flex-1 w-full flex flex-col gap-8">
-        <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-6 rounded-xl border border-border/50">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <div className="w-64 h-8 bg-muted rounded animate-pulse mb-2"></div>
-              <div className="w-32 h-5 bg-muted/70 rounded animate-pulse"></div>
+      <div className="flex-1 w-full flex flex-col gap-12">
+        <div className="flex flex-col gap-8">
+          {/* Groups section skeleton */}
+          <div className="rounded-lg border p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="w-32 h-6 bg-muted rounded animate-pulse"></div>
+              <div className="flex space-x-2">
+                <div className="w-20 h-8 bg-muted rounded animate-pulse"></div>
+                <div className="w-20 h-8 bg-muted rounded animate-pulse"></div>
+              </div>
             </div>
-            <div className="text-right">
-              <div className="w-48 h-4 bg-muted/70 rounded animate-pulse"></div>
+            <div className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-24 bg-muted border rounded-lg animate-pulse"></div>
+              ))}
             </div>
           </div>
-        </div>
-        <div className="space-y-4">
-          <div className="w-48 h-6 bg-muted rounded animate-pulse"></div>
-          <div className="w-full h-32 bg-muted rounded animate-pulse"></div>
+          
+          {/* Meals section skeleton */}
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <div className="w-32 h-7 bg-muted rounded animate-pulse"></div>
+              <div className="w-32 h-10 bg-muted rounded animate-pulse"></div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="h-48 bg-muted rounded-lg animate-pulse"></div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     );

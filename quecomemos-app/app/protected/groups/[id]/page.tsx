@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Info, ChefHat, Utensils } from 'lucide-react';
 import Image from 'next/image';
@@ -85,11 +85,45 @@ export default function GroupDetailPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="space-y-6">
-          <div className="h-8 bg-muted animate-pulse rounded" />
-          <div className="h-64 bg-muted animate-pulse rounded-lg" />
+      <div className="container mx-auto p-6 space-y-6">
+        {/* Header skeleton */}
+        <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:items-center sm:space-x-4">
+          <div className="w-8 h-8 bg-muted rounded animate-pulse self-start"></div>
+          <div className="flex-1 space-y-2">
+            <div className="w-64 h-8 bg-muted rounded animate-pulse"></div>
+            <div className="w-96 h-4 bg-muted/70 rounded animate-pulse"></div>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <div className="w-full sm:w-40 h-10 bg-muted rounded animate-pulse"></div>
+            <div className="w-full sm:w-40 h-10 bg-muted rounded animate-pulse"></div>
+            <div className="w-full sm:w-40 h-10 bg-muted rounded animate-pulse"></div>
+            <div className="w-full sm:w-40 h-10 bg-muted rounded animate-pulse"></div>
+          </div>
         </div>
+
+        {/* Recent Activity skeleton */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="w-48 h-6 bg-muted rounded animate-pulse"></div>
+              <div className="w-24 h-8 bg-muted rounded animate-pulse"></div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="flex items-center gap-4 p-4 border rounded-lg">
+                  <div className="w-12 h-12 rounded-full bg-muted animate-pulse"></div>
+                  <div className="flex-1 space-y-2">
+                    <div className="w-48 h-5 bg-muted rounded animate-pulse"></div>
+                    <div className="w-32 h-4 bg-muted/70 rounded animate-pulse"></div>
+                  </div>
+                  <div className="w-20 h-6 bg-muted rounded animate-pulse"></div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }

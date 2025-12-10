@@ -73,7 +73,7 @@ export function DashboardGroupsSection({ userId }: DashboardGroupsSectionProps) 
 
   if (loading) {
     return (
-      <Card className="border-amber-700/50 bg-gradient-to-br from-amber-800/10 to-amber-900/10">
+      <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center">
@@ -89,7 +89,7 @@ export function DashboardGroupsSection({ userId }: DashboardGroupsSectionProps) 
         <CardContent>
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <Card key={i} className="bg-gradient-to-br from-amber-800/30 to-amber-900/30 border-amber-700/50">
+              <Card key={i}>
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <div className="h-6 w-32 bg-muted/50 animate-pulse rounded" />

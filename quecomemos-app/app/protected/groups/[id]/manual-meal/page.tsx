@@ -8,7 +8,7 @@ import { ArrowLeft, Utensils, Users, CheckCircle } from 'lucide-react';
 import { useUser } from '@/lib/contexts/UserContext';
 import { useGlobalNotification } from '@/lib/contexts/NotificationContext';
 import { useMeals, Meal } from '@/lib/contexts/MealsContext';
-import { MealSearchBar } from '@/components/meal/MealSearchBar';
+import { MealSelectionModal } from '@/components/meal';
 import { MealComposition } from '@/components/meal/MealComposition';
 import { DietaryAlert, CalorieSemaphore } from '@/components/alerts';
 import { useMealWithAlerts } from '@/lib/hooks/useMealWithAlerts';
@@ -43,6 +43,7 @@ export default function GroupManualMealPage() {
   const [submitting, setSubmitting] = useState(false);
   const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showMealModal, setShowMealModal] = useState(false);
 
   // Get meal with dietary alerts
   const { meal: mealWithAlerts } = useMealWithAlerts(selectedMeal?.MealID || 0);
@@ -71,8 +72,10 @@ export default function GroupManualMealPage() {
     }
   }, [fetchGroup, profile?.id, fetchAllMeals]);
 
-  const handleMealSelect = (meal: Meal | null) => {
-    setSelectedMeal(meal);
+  const handleMealSelect = (mealId: number) => {
+    const meal = allMeals.find(m => m.MealID === mealId);
+    setSelectedMeal(meal || null);
+    setShowMealModal(false);
   };
 
   const handleRegister = async () => {
@@ -205,13 +208,14 @@ export default function GroupManualMealPage() {
           <CardTitle>Select Meal</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <MealSearchBar
-            allMeals={allMeals}
-            onMealSelect={handleMealSelect}
-            selectedMeal={selectedMeal}
-            placeholder="Search for the meal your group consumed..."
-            showAdvancedFilters={false}
-          />
+          <Button
+            onClick={() => setShowMealModal(true)}
+            variant="outline"
+            className="w-full border-orange-600 text-orange-400 hover:bg-orange-900/30 h-auto py-4"
+          >
+            <Utensils className="w-5 h-5 mr-2" />
+            {selectedMeal ? `Selected: ${selectedMeal.name}` : 'Choose a meal...'}
+          </Button>
 
           {/* Selected Meal Details */}
           {selectedMeal && (
@@ -321,6 +325,18 @@ export default function GroupManualMealPage() {
 
       {/* Registration History */}
       <RegistrationHistorySection groupId={parseInt(groupId)} className="mt-6" />
+
+      {/* Meal Selection Modal */}
+      <MealSelectionModal
+        isOpen={showMealModal}
+        onClose={() => setShowMealModal(false)}
+        onSelect={handleMealSelect}
+        groupId={parseInt(groupId)}
+        title="Select Group Meal"
+        description="Choose the meal your group consumed together"
+        confirmButtonText="Select This Meal"
+        primaryColor="orange"
+      />
     </div>
   );
 }

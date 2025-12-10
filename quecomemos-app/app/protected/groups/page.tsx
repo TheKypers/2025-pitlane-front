@@ -216,7 +216,7 @@ export default function GroupsPage() {
 
 function GroupsPageSkeleton() {
   return (
-    <div className="container mx-auto p-6 space-y-6 border border-amber-700/50 rounded-lg bg-gradient-to-br from-amber-800/10 to-amber-900/10">
+    <div className="container mx-auto p-6 space-y-6 border rounded-lg">
       {/* Header skeleton */}
       <div className="flex items-center justify-between">
         <div className="w-32 h-8 bg-muted rounded animate-pulse"></div>
@@ -227,7 +227,7 @@ function GroupsPageSkeleton() {
         {/* Main content skeleton */}
         <div className="lg:col-span-2 space-y-6">
           {/* Search and filters skeleton */}
-          <Card className="bg-gradient-to-br from-amber-800/30 to-amber-900/30 border-amber-700/50">
+          <Card>
             <CardContent className="pt-6">
               <div className="space-y-4">
                 <div className="flex gap-4">
@@ -245,7 +245,7 @@ function GroupsPageSkeleton() {
           {/* Groups grid skeleton */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[1, 2, 3, 4].map((i) => (
-              <Card key={i} className="bg-gradient-to-br from-amber-800/30 to-amber-900/30 border-amber-700/50">
+              <Card key={i}>
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <div className="w-32 h-6 bg-muted rounded animate-pulse"></div>
@@ -270,7 +270,7 @@ function GroupsPageSkeleton() {
         
         {/* Sidebar skeleton */}
         <div className="space-y-6">
-          <Card className="bg-gradient-to-br from-amber-800/30 to-amber-900/30 border-amber-700/50">
+          <Card>
             <CardHeader>
               <div className="w-32 h-6 bg-muted rounded animate-pulse"></div>
             </CardHeader>
@@ -287,7 +287,7 @@ function GroupsPageSkeleton() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-amber-800/30 to-amber-900/30 border-amber-700/50">
+          <Card>
             <CardHeader>
               <div className="w-40 h-6 bg-muted rounded animate-pulse"></div>
             </CardHeader>

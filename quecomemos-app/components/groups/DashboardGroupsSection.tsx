@@ -73,17 +73,37 @@ export function DashboardGroupsSection({ userId }: DashboardGroupsSectionProps) 
 
   if (loading) {
     return (
-      <Card>
+      <Card className="border-amber-700/50 bg-gradient-to-br from-amber-800/10 to-amber-900/10">
         <CardHeader>
-          <CardTitle className="flex items-center">
-            <Users className="w-5 h-5 mr-2" />
-            My Groups
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center">
+              <Users className="w-5 h-5 mr-2" />
+              My Groups
+            </CardTitle>
+            <div className="flex space-x-2">
+              <div className="h-8 w-20 bg-muted animate-pulse rounded" />
+              <div className="h-8 w-20 bg-muted animate-pulse rounded" />
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-20 bg-muted animate-pulse rounded-lg" />
+              <Card key={i} className="bg-gradient-to-br from-amber-800/30 to-amber-900/30 border-amber-700/50">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="h-6 w-32 bg-muted/50 animate-pulse rounded" />
+                    <div className="h-6 w-12 bg-muted/50 animate-pulse rounded" />
+                  </div>
+                  <div className="h-4 w-48 bg-muted/50 animate-pulse rounded mt-2" />
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div className="flex items-center justify-between">
+                    <div className="h-4 w-24 bg-muted/50 animate-pulse rounded" />
+                    <div className="h-4 w-20 bg-muted/50 animate-pulse rounded" />
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </CardContent>

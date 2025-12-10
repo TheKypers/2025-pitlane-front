@@ -152,14 +152,6 @@ function UserHistoryPageContent() {
     }
   }, [progress?.goal, setCalorieGoal]);
 
-  // Format game type for display
-  const formatGameType = (gameType: string) => {
-    return gameType
-      .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(' ') + ' Game';
-  };
-
   const fetchUserHistory = useCallback(async () => {
     if (!profile?.id) return;
     
@@ -532,9 +524,7 @@ function UserHistoryPageContent() {
                     const uniqueKey = `${consumption.ConsumptionID}-${idx}`;
                     
                     // Format display name for game sessions
-                    const displayName = consumption.source === 'game' && consumption.gameSession?.gameType
-                      ? formatGameType(consumption.gameSession.gameType)
-                      : consumption.name;
+                    const displayName = consumption.name;
                     
                     return (
                       <div 

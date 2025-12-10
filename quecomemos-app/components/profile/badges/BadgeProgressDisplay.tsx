@@ -86,16 +86,60 @@ export function BadgeProgressDisplay({ profileId }: BadgeProgressDisplayProps) {
 
   if (loading) {
     return (
-      <Card className="bg-zinc-900/95 border-amber-900/30">
+      <Card className="bg-black-900/95 border-grey-900/30">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-amber-100">
-            <Award className="w-5 h-5 text-amber-500" />
-            Badge Progress
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2 text-amber-100">
+              <Award className="w-5 h-5 text-amber-500" />
+              Badge Progress
+            </CardTitle>
+            <div className="h-8 w-24 bg-muted/50 animate-pulse rounded" />
+          </div>
+          
+          <div className="mt-4 flex items-center justify-between">
+            <div className="h-4 w-32 bg-muted/50 animate-pulse rounded" />
+            <div className="h-4 w-12 bg-muted/50 animate-pulse rounded" />
+          </div>
+          <div className="mt-2 h-2 w-full bg-amber-950/50 rounded-full overflow-hidden">
+            <div className="h-full w-0 bg-muted/50 animate-pulse" />
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600"></div>
+          {/* Earned Badges Skeleton */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-3">
+              <div className="h-5 w-28 bg-muted/50 animate-pulse rounded" />
+              <div className="h-7 w-16 bg-muted/50 animate-pulse rounded" />
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="p-3 rounded-lg border-2 border-amber-900/30 bg-amber-950/20">
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-14 h-14 rounded-full bg-muted/50 animate-pulse" />
+                    <div className="w-full">
+                      <div className="h-4 w-full bg-muted/50 animate-pulse rounded" />
+                      <div className="h-5 w-16 bg-muted/50 animate-pulse rounded mt-1 mx-auto" />
+                    </div>
+                    <div className="h-3 w-20 bg-muted/50 animate-pulse rounded" />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="border-t border-amber-900/30 mt-4"></div>
+          </div>
+          
+          {/* Progress Section Skeleton */}
+          <div className="mb-3">
+            <div className="h-5 w-40 bg-muted/50 animate-pulse rounded" />
+          </div>
+          <div className="space-y-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="space-y-3">
+                <div className="h-5 w-48 bg-muted/50 animate-pulse rounded" />
+                <div className="h-2 w-full bg-muted/50 animate-pulse rounded" />
+                <div className="h-4 w-32 bg-muted/50 animate-pulse rounded" />
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>

@@ -4,7 +4,7 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, Trophy, Egg, RotateCw, Users } from 'lucide-react';
+import { Loader2, Trophy, Egg } from 'lucide-react';
 import { useUser } from '@/lib/contexts/UserContext';
 import { GameService, GameSession } from '@/lib/services/GameService';
 import { useGlobalNotification } from '@/lib/contexts/NotificationContext';
@@ -40,6 +40,7 @@ export default function GamePlayPage() {
   const gameTimerRef = useRef<NodeJS.Timeout | null>(null);
   const countdownTimerRef = useRef<NodeJS.Timeout | null>(null);
   const hasSeenRouletteAnimation = useRef(false);
+  const isCompletingRoulette = useRef(false);
 
   // Poll for game updates
   const pollGameSession = useCallback(async () => {
@@ -256,14 +257,18 @@ export default function GamePlayPage() {
   };
 
   // Complete roulette after animation
-  const handleRouletteComplete = async () => {
+  const handleRouletteComplete = useCallback(async () => {
     if (!userData?.profile?.id || !rouletteWinner) return;
+    if (isCompletingRoulette.current) return; // Prevent double execution
     
     const isHost = gameSession?.hostId === userData.profile.id;
     
     // Host completes the game
     if (isHost) {
+      isCompletingRoulette.current = true; // Mark as in progress
       try {
+        console.log('[GamePlay] Completing roulette with winner:', rouletteWinner.winnerProfileId);
+        
         // Step 2: Complete the game on backend with predetermined winner
         const result = await GameService.spinRoulette(
           gameSessionId, 
@@ -289,13 +294,14 @@ export default function GamePlayPage() {
         setSpinning(false);
         setShowWheel(false);
         hasSeenRouletteAnimation.current = false;
+        isCompletingRoulette.current = false; // Reset on error
       }
     } else {
       // Non-host: just hide animation and wait for navigation
       setShowWheel(false);
       // Keep spinning true to show loading state
     }
-  };
+  }, [userData, rouletteWinner, gameSession?.hostId, gameSessionId, processBadgeNotifications, showError]);
 
   // Handle playing phase
   useEffect(() => {
@@ -433,63 +439,69 @@ export default function GamePlayPage() {
       );
     }
     
-    return (
-      <div className="container mx-auto p-6 space-y-6">
-        {/* Header */}
-        <div className="flex justify-between items-center">
-          <Card className="bg-gradient-to-r from-orange-900/40 to-orange-950/60 border-orange-700/50 px-6 py-3">
-            <div className="flex items-center gap-3">
-              <RotateCw className="w-6 h-6 text-orange-300" />
-              <div>
-                <p className="text-xs text-gray-400">Roulette</p>
-                <p className="text-3xl font-bold text-orange-300">Proposed Meals</p>
-              </div>
-            </div>
-          </Card>
+    // For roulette: Show ONLY the wheel with spin button (no background UI)
+    // Prepare meals for the wheel
+    const eligibleMeals = gameSession?.participants.filter(p => p.mealId).map(p => ({
+      id: p.GameParticipantID,
+      name: p.meal?.name || 'Unknown',
+      username: p.profile.username
+    })) || [];
 
-          <Card className="bg-gradient-to-r from-yellow-900/40 to-yellow-950/60 border-yellow-700/50 px-6 py-3">
-            <div className="flex items-center gap-3">
-              <Users className="w-6 h-6 text-yellow-400" />
-              <div>
-                <p className="text-xs text-gray-400">Players</p>
-                <p className="text-3xl font-bold text-yellow-400">{gameSession?.participants.length}</p>
-              </div>
+    // If there are meals and we haven't spun yet, show the wheel ready to spin
+    if (eligibleMeals.length > 0 && !spinning && !showWheel) {
+      return (
+        <div className="container mx-auto p-6 flex items-center justify-center min-h-[80vh]">
+          <div className="flex flex-col items-center space-y-8 max-w-md">
+            {/* Minimalist title */}
+            <div className="text-center space-y-2">
+              <h2 className="text-3xl font-bold text-gray-200">Roulette</h2>
+              <p className="text-sm text-gray-400">Let fate decide your meal</p>
             </div>
-          </Card>
-        </div>
 
-        {/* Proposed meals list */}
-        <Card className="bg-zinc-900/60 border-zinc-700/50">
-          <CardContent className="p-4">
-            <div className="grid md:grid-cols-2 gap-3">
-              {gameSession?.participants.map((p) => (
-                <div key={p.GameParticipantID} className="p-3 rounded-lg bg-zinc-800/50 flex items-center justify-between">
-                  <div className="flex flex-col">
-                    <span className="text-gray-200">{p.profile.username}</span>
-                    {p.meal ? (
-                      <span className="text-xs text-orange-300 mt-1">🍽️ {p.meal.name}</span>
-                    ) : (
-                      <span className="text-xs text-gray-500 mt-1">No meal proposed</span>
-                    )}
+            {/* Meal proposals list */}
+            <div className="w-full space-y-2">
+              <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">Proposed Meals</h3>
+              <div className="space-y-2">
+                {eligibleMeals.map((meal) => (
+                  <div
+                    key={meal.id}
+                    className="bg-gray-800/50 border border-gray-700/50 rounded-lg px-4 py-3 flex justify-between items-center"
+                  >
+                    <span className="text-gray-200 font-medium">{meal.name}</span>
+                    <span className="text-gray-400 text-sm">by {meal.username}</span>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
+
+            {/* Spin button for host */}
+            {isHost ? (
+              <button
+                onClick={handleSpinRoulette}
+                disabled={spinning}
+                className="px-12 py-6 bg-black border-2 border-amber-500 text-amber-500 text-2xl font-bold rounded-xl hover:bg-amber-500 hover:text-black transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {spinning ? 'Spinning...' : 'Spin Roulette'}
+              </button>
+            ) : (
+              <div className="text-center text-gray-400 text-lg">
+                <p>Waiting for host to spin the roulette...</p>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    // Fallback: waiting for meals
+    return (
+      <div className="container mx-auto p-6 flex items-center justify-center min-h-[80vh]">
+        <Card className="w-full max-w-md">
+          <CardContent className="flex flex-col items-center justify-center p-12 space-y-4">
+            <Loader2 className="h-16 w-16 animate-spin text-primary" />
+            <h3 className="text-2xl font-bold">Waiting for meal proposals...</h3>
           </CardContent>
         </Card>
-
-        {/* Spin button for host */}
-        {isHost && (
-          <div className="flex justify-center">
-            <Button
-              onClick={handleSpinRoulette}
-              disabled={spinning || hasSeenRouletteAnimation.current || !gameSession?.participants.some(p => p.mealId)}
-              className="bg-orange-500 hover:bg-orange-600 text-white disabled:opacity-50"
-            >
-              {spinning || hasSeenRouletteAnimation.current ? 'Spinning...' : 'Spin Roulette'}
-            </Button>
-          </div>
-        )}
       </div>
     );
   }

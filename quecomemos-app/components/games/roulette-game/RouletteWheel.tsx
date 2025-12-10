@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { Card } from '@/components/ui/card';
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
+import { Trophy } from 'lucide-react';
 
 interface RouletteWheelProps {
   meals: Array<{
@@ -15,9 +15,19 @@ interface RouletteWheelProps {
 
 export default function RouletteWheel({ meals, winnerId, onSpinComplete }: RouletteWheelProps) {
   const [rotation, setRotation] = useState(0);
-  const [isSpinning, setIsSpinning] = useState(false);
-  const [hasSpun, setHasSpun] = useState(false);
+  const [animationComplete, setAnimationComplete] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const hasStartedAnimation = useRef(false);
+
+  // Enhanced color palette for better visibility
+  const colors = useMemo(() => [
+    '#F97316', // orange-500
+    '#FB923C', // orange-400
+    '#FDBA74', // orange-300
+    '#FED7AA', // orange-200
+    '#EA580C', // orange-600
+    '#C2410C', // orange-700
+  ], []);
 
   const drawWheel = useCallback((currentRotation: number) => {
     const canvas = canvasRef.current;
@@ -35,16 +45,11 @@ export default function RouletteWheel({ meals, winnerId, onSpinComplete }: Roule
 
     // Draw segments
     const segmentAngle = (2 * Math.PI) / meals.length;
-    const colors = [
-      '#F97316', // orange-500
-      '#FB923C', // orange-400
-      '#FDBA74', // orange-300
-      '#FED7AA', // orange-200
-    ];
 
     meals.forEach((meal, index) => {
       const startAngle = index * segmentAngle + currentRotation;
       const endAngle = startAngle + segmentAngle;
+      const midAngle = startAngle + segmentAngle / 2;
 
       // Draw segment
       ctx.beginPath();
@@ -57,147 +62,175 @@ export default function RouletteWheel({ meals, winnerId, onSpinComplete }: Roule
       ctx.lineWidth = 3;
       ctx.stroke();
 
-      // Draw text
+      // Draw text (readable regardless of orientation)
       ctx.save();
       ctx.translate(centerX, centerY);
-      ctx.rotate(startAngle + segmentAngle / 2);
-      ctx.textAlign = 'center';
-      ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 16px sans-serif';
+      ctx.rotate(midAngle);
       
-      // Meal name
-      ctx.fillText(meal.name, radius * 0.6, -5);
+      // Determine if text should be upside down and flip if needed
+      const textRotation = midAngle % (2 * Math.PI);
+      const shouldFlipText = textRotation > Math.PI / 2 && textRotation < (3 * Math.PI) / 2;
       
-      // Username
-      ctx.font = '12px sans-serif';
-      ctx.fillStyle = '#E5E7EB'; // gray-200
-      ctx.fillText(`by ${meal.username}`, radius * 0.6, 10);
+      if (shouldFlipText) {
+        // Flip text to make it readable when upside down
+        ctx.rotate(Math.PI);
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 18px sans-serif';
+        ctx.fillText(meal.name, -radius * 0.65, 5);
+        
+        ctx.font = '14px sans-serif';
+        ctx.fillStyle = '#E5E7EB';
+        ctx.fillText(`by ${meal.username}`, -radius * 0.65, 22);
+      } else {
+        // Normal text orientation
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = 'bold 18px sans-serif';
+        ctx.fillText(meal.name, radius * 0.65, -5);
+        
+        ctx.font = '14px sans-serif';
+        ctx.fillStyle = '#E5E7EB';
+        ctx.fillText(`by ${meal.username}`, radius * 0.65, 12);
+      }
       
       ctx.restore();
     });
 
     // Draw center circle
     ctx.beginPath();
-    ctx.arc(centerX, centerY, 30, 0, 2 * Math.PI);
-    ctx.fillStyle = '#FCD34D'; // amber-300
+    ctx.arc(centerX, centerY, 40, 0, 2 * Math.PI);
+    ctx.fillStyle = '#FCD34D';
     ctx.fill();
-    ctx.strokeStyle = '#F59E0B'; // amber-500
-    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#F59E0B';
+    ctx.lineWidth = 4;
     ctx.stroke();
+
+    // Draw center icon
+    ctx.fillStyle = '#92400E';
+    ctx.font = 'bold 24px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('🍽️', centerX, centerY);
 
     // Draw outer border
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-    ctx.strokeStyle = '#EAB308'; // yellow-500
+    ctx.strokeStyle = '#EAB308';
     ctx.lineWidth = 6;
     ctx.stroke();
-  }, [meals]);
+  }, [meals, colors]);
 
+  // Initial draw
   useEffect(() => {
-    if (!isSpinning) {
-      drawWheel(0);
-    }
-  }, [isSpinning, drawWheel]);
+    drawWheel(0);
+  }, [drawWheel]);
 
-  const spinWheel = () => {
-    if (isSpinning || hasSpun) return;
+  // Spin animation effect - runs ONCE when component mounts
+  useEffect(() => {
+    if (hasStartedAnimation.current) return;
+    hasStartedAnimation.current = true;
 
-    setIsSpinning(true);
-    setHasSpun(true);
-
-    // Find winner index
     const winnerIndex = meals.findIndex(m => m.id === winnerId);
     if (winnerIndex === -1) {
-      console.error('Winner not found in meals');
+      console.error('[RouletteWheel] Winner not found in meals');
       onSpinComplete();
       return;
     }
 
-    // Calculate where winner should land (at top, 12 o'clock = -90 degrees = -PI/2)
+    console.log('[RouletteWheel] Starting animation to winner:', meals[winnerIndex].name);
+
+    // Calculate target rotation
     const segmentAngle = (2 * Math.PI) / meals.length;
     const winnerSegmentCenter = winnerIndex * segmentAngle + segmentAngle / 2;
-    
-    // Add randomness within the winning segment (not always center)
-    const randomOffset = (Math.random() - 0.5) * segmentAngle * 0.6; // 60% of segment width
-    
-    // Calculate final rotation: point to top (-PI/2) with random offset
+    const randomOffset = (Math.random() - 0.5) * segmentAngle * 0.5;
     const targetAngle = -Math.PI / 2 - winnerSegmentCenter - randomOffset;
-    
-    // Add multiple full rotations for dramatic effect (5-7 full spins)
-    const fullSpins = 5 + Math.floor(Math.random() * 3);
+    const fullSpins = 6 + Math.floor(Math.random() * 3);
     const totalRotation = targetAngle + fullSpins * 2 * Math.PI;
 
-    // Animation parameters
-    const duration = 4000; // 4 seconds
+    // Animation
+    const duration = 5000;
     const startTime = Date.now();
-    const startRotation = rotation;
 
     const animate = () => {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
-
-      // Easing function: ease-out cubic for natural deceleration
-      const easeOutCubic = 1 - Math.pow(1 - progress, 3);
-
-      const currentRotation = startRotation + totalRotation * easeOutCubic;
+      const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+      const currentRotation = totalRotation * easeOutQuart;
+      
       setRotation(currentRotation);
       drawWheel(currentRotation);
 
       if (progress < 1) {
         requestAnimationFrame(animate);
       } else {
-        setIsSpinning(false);
-        setTimeout(onSpinComplete, 500); // Small delay before showing results
+        console.log('[RouletteWheel] Animation complete');
+        setAnimationComplete(true);
+        
+        // Show winner for 2 seconds then proceed to results
+        setTimeout(() => {
+          console.log('[RouletteWheel] Proceeding to results');
+          onSpinComplete();
+        }, 2000);
       }
     };
 
     animate();
-  };
+  }, [meals, winnerId, drawWheel, onSpinComplete]);
+
+  // Redraw continuously to maintain the wheel state
+  useEffect(() => {
+    if (animationComplete) {
+      drawWheel(rotation);
+    }
+  }, [animationComplete, rotation, drawWheel]);
+
 
   return (
-    <Card className="bg-gradient-to-br from-orange-900/60 to-orange-950/80 border-orange-700/50 p-8">
-      <div className="flex flex-col items-center space-y-6">
-        <h2 className="text-3xl font-bold text-orange-300">🎰 Roulette Wheel</h2>
-        
-        {/* Pointer at top */}
-        <div className="relative">
-          <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 z-10">
-            <div className="w-0 h-0 border-l-[20px] border-l-transparent border-r-[20px] border-r-transparent border-t-[30px] border-t-yellow-500"></div>
-          </div>
-
-          {/* Canvas */}
-          <canvas
-            ref={canvasRef}
-            width={500}
-            height={500}
-            className="rounded-full shadow-2xl"
+    <div className="flex flex-col items-center space-y-8">
+      {/* Pointer at top */}
+      <div className="relative">
+        <div className="absolute left-1/2 -translate-x-1/2 -top-10 z-10">
+          <div 
+            className="w-0 h-0" 
             style={{
-              boxShadow: '0 0 60px rgba(249, 115, 22, 0.5)',
+              borderLeft: '24px solid transparent',
+              borderRight: '24px solid transparent',
+              borderTop: '36px solid #EAB308',
             }}
           />
         </div>
 
-        {!isSpinning && !hasSpun && (
-          <button
-            onClick={spinWheel}
-            className="px-8 py-4 bg-orange-500 hover:bg-orange-600 text-white text-xl font-bold rounded-lg shadow-lg transition-all transform hover:scale-105"
-          >
-            🎲 SPIN!
-          </button>
-        )}
-
-        {isSpinning && (
-          <div className="text-orange-300 text-xl font-semibold animate-pulse">
-            Spinning...
-          </div>
-        )}
-        
-        {!isSpinning && hasSpun && (
-          <div className="text-orange-300 text-xl font-semibold">
-            🎉 Winner determined!
-          </div>
-        )}
+        {/* Canvas */}
+        <div className="relative">
+          <canvas
+            ref={canvasRef}
+            width={600}
+            height={600}
+            className="rounded-full"
+            style={{
+              filter: 'drop-shadow(0 0 60px rgba(249, 115, 22, 0.5))',
+            }}
+          />
+          
+          {/* Winner overlay when animation complete */}
+          {animationComplete && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="bg-green-500/95 text-white px-8 py-4 rounded-lg shadow-2xl transform -translate-y-32">
+                <div className="flex items-center gap-3">
+                  <Trophy className="w-8 h-8" />
+                  <div>
+                    <div className="font-bold text-xl">Winner!</div>
+                    <div className="text-sm">
+                      {meals.find(m => m.id === winnerId)?.name}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-    </Card>
+    </div>
   );
 }

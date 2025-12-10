@@ -69,11 +69,16 @@ export function ConsumptionPointsGraph({ className = '' }: ConsumptionPointsGrap
 
       const consumptions = await response.json();
       
-      // Group by day
+      // Group by day using local date
       const dayMap = new Map<string, DayConsumption>();
       
       consumptions.forEach((consumption: { ConsumptionID: number; name: string; totalKcal: number; consumedAt: string; calorieStatus?: SemaphoreStatus }) => {
-        const date = new Date(consumption.consumedAt).toISOString().split('T')[0];
+        // Parse as local date to avoid timezone shifts
+        const consumedDate = new Date(consumption.consumedAt);
+        const year = consumedDate.getFullYear();
+        const month = String(consumedDate.getMonth() + 1).padStart(2, '0');
+        const day = String(consumedDate.getDate()).padStart(2, '0');
+        const date = `${year}-${month}-${day}`;
         
         if (!dayMap.has(date)) {
           dayMap.set(date, {
@@ -99,10 +104,14 @@ export function ConsumptionPointsGraph({ className = '' }: ConsumptionPointsGrap
       // Fill in missing days with zero values
       const days: DayConsumption[] = [];
       const currentDate = new Date(startDate);
-      const endDateStr = endDate.toISOString().split('T')[0];
       
-      while (currentDate.toISOString().split('T')[0] <= endDateStr) {
-        const dateStr = currentDate.toISOString().split('T')[0];
+      // Use local date comparison to avoid timezone issues
+      while (currentDate <= endDate) {
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+        const dateStr = `${year}-${month}-${day}`;
+        
         if (dayMap.has(dateStr)) {
           days.push(dayMap.get(dateStr)!);
         } else {
@@ -128,13 +137,18 @@ export function ConsumptionPointsGraph({ className = '' }: ConsumptionPointsGrap
     const now = new Date();
     let startDate: Date;
     let endDate = new Date(now);
+    // Set end date to end of today
     endDate.setHours(23, 59, 59, 999);
 
     if (timeFrame === 'custom' && customStartDate && customEndDate) {
       startDate = new Date(customStartDate);
+      startDate.setHours(0, 0, 0, 0);
       endDate = new Date(customEndDate);
       endDate.setHours(23, 59, 59, 999);
     } else {
+      // For 7 days: show today + 6 previous days
+      // For 30 days: show today + 29 previous days
+      // For 90 days: show today + 89 previous days
       const daysBack = timeFrame === '7days' ? 6 : timeFrame === '30days' ? 29 : 89;
       startDate = new Date(now);
       startDate.setDate(startDate.getDate() - daysBack);
@@ -149,7 +163,9 @@ export function ConsumptionPointsGraph({ className = '' }: ConsumptionPointsGrap
   };
 
   const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
+    // Parse as local date to avoid timezone shifts
+    const [year, month, day] = dateStr.split('-').map(Number);
+    const date = new Date(year, month - 1, day);
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
@@ -274,6 +290,7 @@ export function ConsumptionPointsGraph({ className = '' }: ConsumptionPointsGrap
               <YAxis 
                 stroke="#9ca3af"
                 style={{ fontSize: '12px' }}
+                label={{ value: 'kcal', angle: -90, position: 'insideLeft', style: { fill: '#9ca3af' } }}
               />
               <Tooltip
                 contentStyle={{
@@ -288,7 +305,9 @@ export function ConsumptionPointsGraph({ className = '' }: ConsumptionPointsGrap
                   return [value, name];
                 }}
                 labelFormatter={(label) => {
-                  const date = new Date(label);
+                  // Parse as local date to avoid timezone shifts
+                  const [year, month, day] = label.split('-').map(Number);
+                  const date = new Date(year, month - 1, day);
                   return date.toLocaleDateString('en-US', { 
                     weekday: 'long',
                     year: 'numeric',
@@ -299,7 +318,7 @@ export function ConsumptionPointsGraph({ className = '' }: ConsumptionPointsGrap
               />
               <Line
                 type="monotone"
-                dataKey="count"
+                dataKey="totalKcal"
                 stroke="#f97316"
                 strokeWidth={2}
                 dot={<CustomDot />}
@@ -314,12 +333,17 @@ export function ConsumptionPointsGraph({ className = '' }: ConsumptionPointsGrap
           <div className="p-4 bg-muted rounded-lg space-y-3">
             <div className="flex items-center justify-between">
               <h4 className="font-semibold">
-                {new Date(selectedDay.date).toLocaleDateString('en-US', {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}
+                {(() => {
+                  // Parse as local date to avoid timezone shifts
+                  const [year, month, day] = selectedDay.date.split('-').map(Number);
+                  const date = new Date(year, month - 1, day);
+                  return date.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  });
+                })()}
               </h4>
               <Button
                 variant="ghost"

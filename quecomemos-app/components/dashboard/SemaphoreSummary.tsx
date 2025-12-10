@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart3, TrendingUp } from 'lucide-react';
 import { CalorieSemaphoreIndicator } from '@/components/alerts';
 import { useUser } from '@/lib/contexts/UserContext';
+import { useHistoryPageContext } from '@/lib/contexts/HistoryPageContext';
 import { createClient } from '@/lib/supabase/client';
 
 interface SemaphoreStats {
@@ -19,6 +20,7 @@ interface SemaphoreSummaryProps {
 
 export function SemaphoreSummary({ className = '' }: SemaphoreSummaryProps) {
   const { userData } = useUser();
+  const { calorieGoal } = useHistoryPageContext();
   const [stats, setStats] = useState<SemaphoreStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -65,7 +67,7 @@ export function SemaphoreSummary({ className = '' }: SemaphoreSummaryProps) {
     };
 
     fetchStats();
-  }, [userData?.profile?.id]);
+  }, [userData?.profile?.id, calorieGoal]);
 
   if (loading) {
     return (
@@ -93,12 +95,18 @@ export function SemaphoreSummary({ className = '' }: SemaphoreSummaryProps) {
 
   const renderPeriodStats = (
     label: string,
+    title: string,
     periodStats: { green: number; yellow: number; red: number; total: number }
   ) => {
     if (periodStats.total === 0) {
       return (
-        <div className="text-center py-2 text-gray-400 text-sm">
-          No meals recorded
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-sm">
+            <span className="font-semibold text-amber-200">{title}</span>
+          </div>
+          <div className="text-center py-2 text-gray-400 text-sm">
+            No meals recorded
+          </div>
         </div>
       );
     }
@@ -110,7 +118,7 @@ export function SemaphoreSummary({ className = '' }: SemaphoreSummaryProps) {
     return (
       <div className="space-y-2">
         <div className="flex items-center justify-between text-sm">
-          <span className="font-medium text-amber-200">{label}</span>
+          <span className="font-semibold text-amber-200">{title}</span>
           <span className="text-gray-400">{periodStats.total} meals</span>
         </div>
 
@@ -177,13 +185,13 @@ export function SemaphoreSummary({ className = '' }: SemaphoreSummaryProps) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           <TrendingUp className="w-5 h-5" />
-          Meal Quality Overview
+          Meal Consumption Quality Overview
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {renderPeriodStats('Today', stats.day)}
-        {renderPeriodStats('Last 7 Days', stats.week)}
-        {renderPeriodStats('Last 30 Days', stats.month)}
+        {renderPeriodStats('Today', '1 Day', stats.day)}
+        {renderPeriodStats('Last 7 Days', '1 Week', stats.week)}
+        {renderPeriodStats('Last 30 Days', '1 Month', stats.month)}
       </CardContent>
     </Card>
   );

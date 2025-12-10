@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { Target, Sparkles } from 'lucide-react'
+import { SemaphoreSummary } from '../dashboard/SemaphoreSummary'
 
 interface CalorieProgressDisplayProps {
   consumed: number
@@ -157,6 +158,9 @@ export function CalorieProgressDisplay({ consumed, goal, loading }: CalorieProgr
             </div>
           </div>
         </div>
+
+                          {/* Nutritional Progress Card */}
+          <SemaphoreSummary />
       </CardContent>
     </Card>
   )

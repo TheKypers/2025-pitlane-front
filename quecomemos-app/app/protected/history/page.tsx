@@ -21,6 +21,8 @@ import { useUserBadges } from '@/lib/hooks/useUserBadges';
 import { PrimaryBadgeDisplay } from '@/components/profile/badges/PrimaryBadgeDisplay';
 import { BadgeSelectionModal } from '@/components/profile/badges/BadgeSelectionModal';
 import { SemaphoreSummary } from '@/components/dashboard/SemaphoreSummary';
+import { ConsumptionPointsGraph } from '@/components/dashboard/ConsumptionPointsGraph';
+import { HistoryPageProvider, useHistoryPageContext } from '@/lib/contexts/HistoryPageContext';
 
 import { createClient } from '@/lib/supabase/client';
 
@@ -123,7 +125,7 @@ function HistorySkeleton() {
   );
 }
 
-export default function UserHistoryPage() {
+function UserHistoryPageContent() {
   const router = useRouter();
   const [consumptions, setConsumptions] = useState<Consumption[]>([]);
   const [loading, setLoading] = useState(true);
@@ -137,11 +139,19 @@ export default function UserHistoryPage() {
   // Context hooks
   const { userData } = useUser();
   const profile = userData.profile;
+  const { setCalorieGoal } = useHistoryPageContext();
   const { progress, loading: loadingProgress, updateCalorieGoal: updateCalorieGoalFromHook } = useCalorieProgress();
   const { allMeals, fetchAllMeals } = useMeals();
   const { showNotification, showSuccess } = useGlobalNotification();
   const { triggerRefresh } = useCalorieProgressContext();
   const { stats } = useUserBadges(profile?.id);
+
+  // Sync calorie goal with context
+  useEffect(() => {
+    if (progress?.goal) {
+      setCalorieGoal(progress.goal);
+    }
+  }, [progress?.goal, setCalorieGoal]);
 
   // Format game type for display
   const formatGameType = (gameType: string) => {
@@ -298,6 +308,9 @@ export default function UserHistoryPage() {
 
       // Update the hook's state by calling the hook's update function
       await updateCalorieGoalFromHook(newGoal);
+      
+      // Update context with new goal value
+      setCalorieGoal(newGoal);
       
       return true;
     } catch (error) {
@@ -458,7 +471,6 @@ export default function UserHistoryPage() {
                 className="w-full pl-10 pr-4 py-2 border border-input rounded-md bg-background"
               />
             </div>
-
             {/* Sort */}
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4 text-muted-foreground" />
@@ -647,6 +659,8 @@ export default function UserHistoryPage() {
           </CardContent>
         </Card>
       )}
+        
+
         </TabsContent>
 
         {/* Tab: Calorie Goals */}
@@ -695,15 +709,15 @@ export default function UserHistoryPage() {
               goal={progress?.goal || 2000}
               loading={loadingProgress}
             />
-
             <CalorieGoalSettings
               currentGoal={progress?.goal || 2000}
               onUpdate={updateCalorieGoal}
             />
           </div>
+
           
-          {/* Semaphore Summary */}
-          <SemaphoreSummary />
+          {/* Consumption Points Graph */}
+          <ConsumptionPointsGraph />
         </TabsContent>
 
         {/* Tab: Badges */}
@@ -790,5 +804,13 @@ export default function UserHistoryPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function UserHistoryPage() {
+  return (
+    <HistoryPageProvider>
+      <UserHistoryPageContent />
+    </HistoryPageProvider>
   );
 }

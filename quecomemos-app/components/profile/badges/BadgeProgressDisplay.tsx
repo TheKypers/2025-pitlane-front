@@ -109,7 +109,7 @@ export function BadgeProgressDisplay({ profileId }: BadgeProgressDisplayProps) {
     : badgeProgress.filter(bp => bp.hasEarned);
 
   return (
-    <Card className="bg-zinc-900/95 border-amber-900/30">
+    <Card className="bg-black-900/95 border-grey-900/30">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-amber-100">

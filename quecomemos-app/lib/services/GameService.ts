@@ -252,7 +252,7 @@ export class GameService {
     gameSessionId: number,
     profileId: string,
     clickCount: number
-  ): Promise<GameParticipant> {
+  ): Promise<GameParticipant & { gameSession?: GameSession }> {
     const response = await fetch(
       `${API_BASE_URL}/games/${gameSessionId}/submit-clicks`,
       {

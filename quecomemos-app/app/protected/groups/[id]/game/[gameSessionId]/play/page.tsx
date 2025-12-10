@@ -81,8 +81,13 @@ export default function GamePlayPage() {
         }
       }
 
-      // Navigate to results when completed (after animation for non-hosts)
-      if (updated.status === 'completed' && hasSeenRouletteAnimation.current) {
+      // Navigate to results when completed
+      if (updated.status === 'completed') {
+        // For roulette: wait for animation
+        if (updated.gameType === 'roulette' && !hasSeenRouletteAnimation.current) {
+          return; // Don't navigate yet, animation will handle it
+        }
+        // For egg_clicker or roulette after animation: navigate to results
         router.replace(`/protected/groups/${groupId}/game/${gameSessionId}/results`);
       }
     } catch (error) {
@@ -165,6 +170,15 @@ export default function GamePlayPage() {
         clickCountRef.current
       );
       
+      // If game completed (all players submitted), update local state immediately
+      if (result.gameSession && result.gameSession.status === 'completed') {
+        console.log('[GamePlay] Game completed! Navigating to results...');
+        setGameSession(result.gameSession);
+        // Navigate to results immediately
+        router.replace(`/protected/groups/${groupId}/game/${gameSessionId}/results`);
+        return;
+      }
+      
       // Process badge notifications if game completed and this player won
       if (result.badgeNotifications && result.badgeNotifications.length > 0) {
         console.log('[GamePlay] Processing', result.badgeNotifications.length, 'badge notifications');
@@ -176,13 +190,18 @@ export default function GamePlayPage() {
       console.error('Error submitting clicks:', error);
       showError('Error', 'Failed to submit your score');
     }
-  }, [gameSessionId, userData?.profile?.id, hasSubmitted, showError, processBadgeNotifications]);
+  }, [gameSessionId, userData?.profile?.id, hasSubmitted, showError, processBadgeNotifications, router, groupId]);
 
   const handleForceComplete = async () => {
     if (!userData?.profile?.id || gameSession?.hostId !== userData.profile.id) return;
 
     try {
       const result = await GameService.forceCompleteGame(gameSessionId, userData.profile.id);
+      
+      console.log('[GamePlay] Force complete successful, navigating to results...');
+      
+      // Update local state
+      setGameSession(result);
       
       // Process badge notifications if any
       if (result.badgeNotifications && result.badgeNotifications.length > 0) {
@@ -191,6 +210,9 @@ export default function GamePlayPage() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await processBadgeNotifications(result.badgeNotifications as any);
       }
+      
+      // Navigate to results
+      router.replace(`/protected/groups/${groupId}/game/${gameSessionId}/results`);
     } catch (error) {
       console.error('Error forcing game completion:', error);
       showError('Error', 'Failed to force complete game');
@@ -345,7 +367,7 @@ export default function GamePlayPage() {
     );
   }
 
-  if ((gameSession?.status === 'submitting' || hasSubmitted) && gameSession?.gameType === 'egg_clicker') {
+  if ((gameSession?.status === 'submitting' || hasSubmitted) && gameSession?.gameType === 'egg_clicker' && gameSession?.status !== 'completed') {
     const isHost = gameSession?.hostId === userData?.profile?.id;
     
     return (
@@ -362,7 +384,7 @@ export default function GamePlayPage() {
             <Loader2 className="w-6 h-6 animate-spin text-yellow-500 mx-auto mt-4" />
             <p className="text-sm text-gray-400">Waiting for all players...</p>
             
-            {isHost && gameSession?.participants.some(p => p.hasSubmitted) && (
+            {isHost && gameSession?.status === 'submitting' && gameSession?.participants.some(p => p.hasSubmitted) && (
               <Button
                 onClick={handleForceComplete}
                 variant="outline"

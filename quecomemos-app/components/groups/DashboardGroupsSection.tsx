@@ -40,7 +40,6 @@ export function DashboardGroupsSection({ userId }: DashboardGroupsSectionProps) 
     try {
       setLoading(true);
       const url = `${API_BASE_URL}/groups/dashboard/${userId}`;
-      console.log('[DEBUG] DashboardGroupsSection - fetching dashboard groups', { url, userId });
       const response = await fetch(url);
       
       if (!response.ok) {
@@ -50,7 +49,6 @@ export function DashboardGroupsSection({ userId }: DashboardGroupsSectionProps) 
       }
       
       const data = await response.json();
-      console.log('[DEBUG] DashboardGroupsSection - received groups', { count: Array.isArray(data) ? data.length : undefined, data });
       setGroups(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');

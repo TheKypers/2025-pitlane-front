@@ -92,8 +92,6 @@ export function GroupInvitations({ userId, onInvitationAccepted }: GroupInvitati
         onInvitationAccepted();
       }
       
-      // Show success message (optional - you can add a toast)
-      console.log(`Invitation ${response === 'accept' ? 'accepted' : 'rejected'} successfully`);
       
     } catch (error) {
       console.error('Error responding to invitation:', error);

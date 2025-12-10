@@ -85,7 +85,6 @@ export function EditMealForm({ meal, onSuccess, onMealUpdated }: EditMealFormPro
         if (response.ok) {
           const allFoods = await response.json();
           setFoods(allFoods);
-          console.log(`Loaded ${allFoods.length} foods successfully`);
         } else {
           console.error('Failed to load foods:', response.status);
         }
@@ -135,7 +134,6 @@ export function EditMealForm({ meal, onSuccess, onMealUpdated }: EditMealFormPro
       for (const food of mealFoods) {
         if (food.isTemporary && food.tempData) {
           // Create the food in the database
-          console.log('Creating temporary food:', food.tempData.name);
           
           try {
             const foodResponse = await fetch(`${API_BASE_URL}/foods`, {
@@ -158,7 +156,6 @@ export function EditMealForm({ meal, onSuccess, onMealUpdated }: EditMealFormPro
             }
 
             const createdFood = await foodResponse.json();
-            console.log('Created food:', createdFood);
             
             // Add to the foods context for future use
             addFood(createdFood);

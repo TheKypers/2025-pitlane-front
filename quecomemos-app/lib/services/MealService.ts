@@ -121,7 +121,6 @@ export class MealService {
     triggerCalorieRefresh?: () => void
   ): Promise<MealRegistrationResult> {
     try {
-      console.log('Attempting to register group meal:', mealData);
 
       const supabase = createClient();
       const { data: { session } } = await supabase.auth.getSession();
@@ -161,7 +160,6 @@ export class MealService {
       }
 
       const result = await response.json();
-      console.log('Group meal registered successfully:', result);
 
       // Trigger calorie progress refresh if callback provided
       if (triggerCalorieRefresh) {

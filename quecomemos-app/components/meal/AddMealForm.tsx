@@ -254,8 +254,6 @@ export default function AddMealForm({ onFoodAdded, onClose, initialMealName }: P
       }
 
       const createdMeal = await mealResponse.json();
-      console.log('[AddMealForm] Meal creation result:', JSON.stringify(createdMeal, null, 2));
-      console.log('[AddMealForm] badgeNotifications field:', createdMeal.badgeNotifications);
 
       showSuccess(
         "Meal Created Successfully!",

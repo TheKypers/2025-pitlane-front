@@ -72,9 +72,6 @@ export function usePrimaryBadge(profileId?: string): PrimaryBadgeResult {
       }
 
       const url = `${API_BASE_URL}/profile/${profileId}/primary-badge`;
-      console.log('Fetching primary badge from:', url);
-      console.log('API_BASE_URL:', API_BASE_URL);
-      console.log('profileId:', profileId);
 
       const response = await fetch(url, {
         method: 'GET',

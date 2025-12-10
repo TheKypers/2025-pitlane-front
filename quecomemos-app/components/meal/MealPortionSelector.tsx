@@ -198,8 +198,6 @@ export function MealPortionSelector({
       totalCalories: calculateCalories()
     };
     
-    console.log('[MealPortionSelector] Confirming with portion data:', portionData);
-
     onConfirm(portionData);
   };
 

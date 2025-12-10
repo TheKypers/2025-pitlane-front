@@ -155,7 +155,6 @@ export class GameHistoryService {
       foodPortions,
     };
     
-    console.log('[GameHistoryService] registerGameMealPortion payload:', JSON.stringify(payload, null, 2));
     
     const response = await fetch(
       `${API_BASE_URL}/game-history/session/${sessionId}/register-portion`,
@@ -175,7 +174,6 @@ export class GameHistoryService {
     }
 
     const result = await response.json();
-    console.log('[GameHistoryService] Success response:', result);
     return result;
   }
 }

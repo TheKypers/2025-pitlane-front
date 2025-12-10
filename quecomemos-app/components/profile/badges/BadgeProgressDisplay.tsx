@@ -71,7 +71,6 @@ export function BadgeProgressDisplay({ profileId }: BadgeProgressDisplayProps) {
       }
 
       const data = await response.json();
-      console.log('[BadgeProgressDisplay] Fetched data:', data);
       setBadgeProgress(data);
     } catch (error) {
       console.error('[BadgeProgressDisplay] Error fetching badge progress:', error);
@@ -296,13 +295,6 @@ export function BadgeProgressDisplay({ profileId }: BadgeProgressDisplayProps) {
               const currentLevelReq = badgeData.currentLevelRequirement;
               const nextLevelReq = badgeData.nextLevelRequirement;
               
-              console.log(`[BadgeProgressDisplay] Rendering ${badge.name}:`, {
-                hasEarned,
-                currentLevel,
-                totalProgress,
-                currentLevelReq: currentLevelReq?.requiredCount,
-                nextLevelReq: nextLevelReq?.requiredCount
-              });
 
               // Determine what to display
               const progressCurrent = totalProgress;

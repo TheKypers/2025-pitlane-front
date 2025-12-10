@@ -71,7 +71,6 @@ export function FoodFormModal({ isOpen, onClose, mode, existingFood }: FoodFormM
         }
 
         const updatedFood = await response.json();
-        console.log('✅ Backend response:', updatedFood);
         
         // Update in global context - backend response first, then override with our values
         const finalUpdate = {
@@ -83,7 +82,6 @@ export function FoodFormModal({ isOpen, onClose, mode, existingFood }: FoodFormM
           dietaryRestrictions: foodPayload.dietaryRestrictions || []
         };
         
-        console.log('📝 Updating context with:', finalUpdate);
         updateFood(existingFood.id, finalUpdate);
         
         showSuccess(
